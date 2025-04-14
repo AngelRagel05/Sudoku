@@ -1,4 +1,4 @@
-package sudokuGUI;
+package ui;
 
 public class SudokuGUI {
 

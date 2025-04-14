@@ -1,4 +1,4 @@
-package boardGeneration;
+package model;
 
 public class GeneradorSudoku {
 
