@@ -2,9 +2,10 @@ package model;
 
 public enum Dificultad {
 
-    FACIL("No sabía que eras un cagado."),
-    MEDIO("Me sorprende que tengas valentía."),
-    DIFICIL("Eres honrado por los Dioses.");
+    FACIL("¿Modo fácil? Bueno, al menos no se te caerán los dedos."),
+    MEDIO("Buen nivel. No es para cualquiera."),
+    DIFICIL("Honor y gloria te esperan, valiente.");
+
 
     private final String descripcion;
 
