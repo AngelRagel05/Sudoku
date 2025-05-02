@@ -28,16 +28,20 @@ public class Sudoku {
         for (int i = 0; i < this.sudoku.length; i++) {
             for (int j = 0; j < this.sudoku.length; j++) {
 
-//                Si la posición en la que esta es un cero
+//                Si la posición en la que esta es un cero (sin valor / valor por defecto)
                 if (this.sudoku[i][j] == 0) {
 
-//                    Valida con los números del 1 al 9 la fila, columna y el subCuadrante
+//                    Valida la fila, columna y el uadrante
                     for (int valor = 1; valor <= 9; valor++) {
+
+//                        Si los tres metodos me retornan un true añado el numero ya que es posible que ese numero sea el correcto
                         if (validarFila(i, valor) && validarColumna(j, valor) && validarCuadrante(i, j ,valor)) {
                             sudoku[i][j] = valor;
 
 //                            Aqui uso recursividad para validar la entrada del número, si retorna false es numero no es correcto, si retorna true lo es.
+//                            Vuelvo a llamar al metodo para volver a hacer lo mismo (Backtraking)
                             if (resolverSudoku()) return true;
+                            sudoku[i][j] = 0;
                         }
                     }
                     return false;
