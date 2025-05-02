@@ -3,9 +3,9 @@ package interfaz;
 import javax.swing.*;
 import java.awt.*;
 
-public class FormaSudoku extends JFrame {
+public class FormaSudoku1 extends JFrame {
 
-    public FormaSudoku () {
+    public FormaSudoku1() {
 
 //        Titulo
         setTitle("Forma Sudoku");
@@ -27,6 +27,6 @@ public class FormaSudoku extends JFrame {
     }
 
     public static void main(String[] args) {
-        new FormaSudoku();
+        new FormaSudoku1();
     }
 }
