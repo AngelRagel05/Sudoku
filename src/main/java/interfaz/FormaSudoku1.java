@@ -1,6 +1,7 @@
 package interfaz;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class FormaSudoku extends JFrame {
 
@@ -12,6 +13,9 @@ public class FormaSudoku extends JFrame {
 //        Tamaño pantalla
         setSize(520, 420);
 
+//        Color de fondo negro
+        getContentPane().setBackground(Color.BLACK);
+
 //        Que se cierre al darle al Close o a la cruz
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -22,4 +26,7 @@ public class FormaSudoku extends JFrame {
         setVisible(true);
     }
 
+    public static void main(String[] args) {
+        new FormaSudoku();
+    }
 }
