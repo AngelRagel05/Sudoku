@@ -22,7 +22,7 @@ public class Sudoku {
     }
 
 //    Metodo para resolver sudoku
-    public void resolverSudoku() {
+    public boolean resolverSudoku() {
 
 //        Recorro el tablero
         for (int i = 0; i < this.sudoku.length; i++) {
@@ -34,12 +34,17 @@ public class Sudoku {
 //                    Valida con los números del 1 al 9 la fila, columna y el subCuadrante
                     for (int valor = 1; valor <= 9; valor++) {
                         if (validarFila(i, valor) && validarColumna(j, valor) && validarCuadrante(i, j ,valor)) {
+                            sudoku[i][j] = valor;
 
+//                            Aqui uso recursividad para validar la entrada del número, si retorna false es numero no es correcto, si retorna true lo es.
+                            if (resolverSudoku()) return true;
                         }
                     }
+                    return false;
                 }
             }
         }
+        return true;
     }
 
 //    Validar Cuadrante
@@ -56,7 +61,7 @@ public class Sudoku {
         }
         return true;
     }
-    
+
     public int subCuadranteActual (int pos) {
         if (pos <= 2) return 3;
         else if (pos <= 5) return 6;
@@ -83,6 +88,18 @@ public class Sudoku {
         return true;
     }
 
+    public void mostrarSudoku() {
+        resolverSudoku();
+        for (int i = 0; i < sudoku.length; i++) {
+            for (int j = 0; j < sudoku[0].length; j++) {
+                System.out.print(sudoku[i][j]);
+                if (!(j == sudoku[0].length-1)) System.out.print(" - ");
+            }
+            System.out.println();
+        }
+    }
+
+//    Get y Set
     public int[][] getSudoku() {
         return this.sudoku;
     }
