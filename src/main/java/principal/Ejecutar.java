@@ -1,11 +1,12 @@
 package principal;
 
+import interfaz.FormaSudoku;
 import modelo.Sudoku;
 
 public class Ejecutar {
 
     public static void main(String[] args) {
-        Sudoku sudoku = new Sudoku();
-        sudoku.mostrarSudoku();
+        FormaSudoku sudoku = new FormaSudoku();
+
     }
 }

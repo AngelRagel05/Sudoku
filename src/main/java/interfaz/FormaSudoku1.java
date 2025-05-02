@@ -25,8 +25,4 @@ public class FormaSudoku1 extends JFrame {
 //        Que se vea
         setVisible(true);
     }
-
-    public static void main(String[] args) {
-        new FormaSudoku1();
-    }
 }
