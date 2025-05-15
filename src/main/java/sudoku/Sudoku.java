@@ -88,15 +88,23 @@ public class Sudoku {
 
     // Valida si el movimiento es válido según las reglas Sudoku
     public boolean esMovimientoValido(int fila, int columna, int valor) {
+
+//        Compruebo que el número añadido esté entre el 1 y 9
         if (valor < 1 || valor > 9) {
             throw new EntradaFueraDeRangoException("Valor debe estar entre 1 y 9.");
         }
         if (fila < 0 || fila > 8 || columna < 0 || columna > 8) {
             throw new EntradaFueraDeRangoException("Coordenadas fuera de rango.");
         }
+
+//        Compruebo que no esté en una celda que ya esté fijada
         if (celdasFijas[fila][columna]) {
             throw new MovimientoInvalidoException("No puedes modificar una celda fija.");
         }
+
+//        Guardo el valor
+        int valorOriginal = tablero[fila][columna];
+        tablero[fila][columna] = 0;
 
         // Revisar fila
         for (int c = 0; c < 9; c++) {
@@ -115,6 +123,8 @@ public class Sudoku {
             }
         }
 
+//        Le vuelvo a dar el valor
+        tablero[fila][columna] = valorOriginal;
         return true;
     }
 
