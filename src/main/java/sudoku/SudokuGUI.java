@@ -13,7 +13,26 @@ public class SudokuGUI extends JFrame {
 
     public SudokuGUI() {
         sudoku = new Sudoku();
-        sudoku.generarTablero("facil");
+        String opciones[] = {"Fácil", "Medio", "Difícil"};
+        int seleccion = JOptionPane.showOptionDialog(
+                null,
+                "Selecciona la dificultad:",
+                "Dificultad del Sudoku",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
+
+        String dificultad;
+        switch (seleccion) {
+            case 1 -> dificultad = "medio";
+            case 2 -> dificultad = "dificil";
+            default -> dificultad = "facil";
+        }
+
+        sudoku.generarTablero(dificultad);
 
         setTitle("Sudoku - Juego");
         setSize(600, 700);
@@ -98,7 +117,26 @@ public class SudokuGUI extends JFrame {
 
         JButton btnReiniciar = new JButton("Reiniciar tablero");
         btnReiniciar.addActionListener(e -> {
-            sudoku.generarTablero("facil"); // Puedes poner diálogo para elegir dificultad
+            String[] opciones = {"Fácil", "Medio", "Difícil"};
+            int seleccion = JOptionPane.showOptionDialog(
+                    this,
+                    "Selecciona la dificultad:",
+                    "Reiniciar Sudoku",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    opciones[0]
+            );
+
+            String dificultad;
+            switch (seleccion) {
+                case 1 -> dificultad = "medio";
+                case 2 -> dificultad = "dificil";
+                default -> dificultad = "facil";
+            }
+
+            sudoku.generarTablero(dificultad);
             actualizarTablero();
         });
 
