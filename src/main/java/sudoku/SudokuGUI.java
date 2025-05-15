@@ -154,22 +154,25 @@ public class SudokuGUI extends JFrame {
             for (int col = 0; col < 9; col++) {
                 int valor = sudoku.tablero[fila][col];
                 JTextField celda = celdas[fila][col];
-                if (valor != 0) {
-                    celda.setText(String.valueOf(valor));
-                } else {
-                    celda.setText("");
-                }
+
+                // Establecer texto
+                celda.setText(valor != 0 ? String.valueOf(valor) : "");
 
                 if (sudoku.celdasFijas[fila][col]) {
+                    // Celdas fijas (no modificables)
                     celda.setEditable(false);
-                    celda.setForeground(Color.DARK_GRAY);
-                    celda.setBackground(new Color(230, 230, 230));
+                    celda.setForeground(Color.BLACK);
+                    celda.setBackground(new Color(220, 220, 220)); // gris claro
+                    celda.setFont(new Font("SansSerif", Font.BOLD, 20));
                 } else {
+                    // Celdas libres (modificables)
                     celda.setEditable(true);
                     celda.setForeground(Color.BLACK);
-                    celda.setBackground(Color.WHITE);
+                    celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
+                    celda.setFont(new Font("SansSerif", Font.PLAIN, 20));
                 }
             }
         }
     }
+
 }
