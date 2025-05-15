@@ -59,44 +59,50 @@ public class SudokuGUI extends JFrame {
 
                 celda.addKeyListener(new KeyAdapter() {
                     @Override
-                    public void keyTyped(KeyEvent e) {
-                        char ch = e.getKeyChar();
+                    public void keyReleased(KeyEvent e) {
+                        String texto = celda.getText().trim();
 
-                        if (ch < '1' || ch > '9') {
-                            e.consume();
+                        if (texto.isEmpty()) {
+                            sudoku.colocarNumero(f, c, 0);
+                            actualizarTablero();
                             return;
                         }
 
-                        int num = ch - '0';
-
                         try {
+                            int num = Integer.parseInt(texto);
+                            if (num < 1 || num > 9) {
+                                throw new NumberFormatException();
+                            }
+
                             if (!sudoku.esMovimientoValido(f, c, num)) {
-                                e.consume();
                                 JOptionPane.showMessageDialog(SudokuGUI.this,
                                         "Movimiento inválido: no puedes poner " + num +
                                                 " en fila " + (f + 1) + ", columna " + (c + 1),
                                         "Error",
                                         JOptionPane.ERROR_MESSAGE);
-
+                                celda.setText(""); // limpiar celda
+                                sudoku.colocarNumero(f, c, 0);
                             } else {
                                 sudoku.colocarNumero(f, c, num);
-                                actualizarTablero();
                             }
 
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(SudokuGUI.this,
+                                    "Introduce un número del 1 al 9.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            celda.setText("");
+                            sudoku.colocarNumero(f, c, 0);
                         } catch (Exception ex) {
-                            e.consume();
                             JOptionPane.showMessageDialog(SudokuGUI.this,
                                     ex.getMessage(),
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        if (celda.getText().isEmpty()) {
+                            celda.setText("");
                             sudoku.colocarNumero(f, c, 0);
                         }
+
+                        actualizarTablero();
                     }
                 });
 

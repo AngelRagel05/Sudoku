@@ -47,14 +47,32 @@ public class Sudoku {
         }
 
         Random rand = new Random();
-        while (celdasVacias > 0) {
+        int intentos = 1000;
+
+        while (celdasVacias > 0 && intentos > 0) {
             int fila = rand.nextInt(9);
             int col = rand.nextInt(9);
-            if (tablero[fila][col] != 0) {
-                tablero[fila][col] = 0;
+
+            if (tablero[fila][col] == 0) {
+                intentos--;
+                continue;
+            }
+
+            int backup = tablero[fila][col];
+            tablero[fila][col] = 0;
+
+            int[][] copia = copiarTablero();
+            if (!resolver()) {
+                // Si no se puede resolver, restauramos la celda
+                tablero[fila][col] = backup;
+            } else {
                 celdasVacias--;
             }
+
+            tablero = copia; // restauramos el tablero original sin solución propuesta
+            intentos--;
         }
+
 
         // Marcar celdas fijas (las que NO están vacías)
         for (int i = 0; i < 9; i++) {
@@ -64,12 +82,28 @@ public class Sudoku {
         }
     }
 
+//    Metodo para generar numeros random
+    private int[] generarNumerosAleatorios() {
+        int[] numeros = {1,2,3,4,5,6,7,8,9};
+        Random rand = new Random();
+
+        for (int i = 0; i < numeros.length; i++) {
+            int j = rand.nextInt(numeros.length);
+            int temp = numeros[i];
+            numeros[i] = numeros[j];
+            numeros[j] = temp;
+        }
+        return numeros;
+    }
+
+
     // Genera un tablero completo válido (backtracking)
     private boolean generarTableroCompleto() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 if (tablero[fila][col] == 0) {
-                    for (int num = 1; num <= 9; num++) {
+                    int[] numeros = generarNumerosAleatorios();
+                    for (int num : numeros) {
                         if (esMovimientoValido(fila, col, num)) {
                             tablero[fila][col] = num;
                             if (generarTableroCompleto()) {
@@ -153,6 +187,36 @@ public class Sudoku {
         return true;
     }
 
+//    Resuelve el Sudoku
+    private boolean resolver() {
+        for (int fila = 0; fila < 9; fila++) {
+            for (int col = 0; col < 9; col++) {
+                if (tablero[fila][col] == 0) {
+                    for (int num = 1; num <= 9; num++) {
+                        if (cumpleReglasSudoku(fila, col, num)) {
+                            tablero[fila][col] = num;
+                            if (resolver()) {
+                                return true;
+                            } else {
+                                tablero[fila][col] = 0;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private int[][] copiarTablero() {
+        int[][] copia = new int[9][9];
+        for (int i = 0; i < 9; i++) {
+            System.arraycopy(tablero[i], 0, copia[i], 0, 9);
+        }
+        return copia;
+    }
+
     private boolean cumpleReglasSudoku(int fila, int columna, int valor) {
         int original = tablero[fila][columna];
         tablero[fila][columna] = 0;
@@ -188,7 +252,6 @@ public class Sudoku {
         tablero[fila][columna] = original;
         return true;
     }
-
 
     // Imprime el tablero en consola (para debug)
     public void mostrarTablero() {
