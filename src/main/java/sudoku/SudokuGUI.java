@@ -52,7 +52,43 @@ public class SudokuGUI extends JFrame {
                 JTextField celda = new JTextField();
                 celda.setHorizontalAlignment(JTextField.CENTER);
                 celda.setFont(font);
-                celda.setBorder(new LineBorder(Color.BLACK, 1));
+
+//                Bordes en los cuadrados 3x3
+                int top = (fila % 3 == 0) ? 2 : 1;
+                int left = (col % 3 == 0) ? 2 : 1;
+                int bottom = (fila == 8) ? 2 : 1;
+                int right = (col == 8) ? 2 : 1;
+
+                Color bordeSuave = new Color(200, 200, 200); // gris claro
+                Color bordeFuerte = Color.BLACK;
+
+                int grosorTop = top;
+                int grosorLeft = left;
+                int grosorBottom = bottom;
+                int grosorRight = right;
+
+                Color colorTop = (top == 2) ? bordeFuerte : bordeSuave;
+                Color colorLeft = (left == 2) ? bordeFuerte : bordeSuave;
+                Color colorBottom = (bottom == 2) ? bordeFuerte : bordeSuave;
+                Color colorRight = (right == 2) ? bordeFuerte : bordeSuave;
+
+                celda.setBorder(BorderFactory.createMatteBorder(
+                        grosorTop, grosorLeft, grosorBottom, grosorRight,
+                        bordeFuerte // este es necesario pero no afecta si los colores se usan individualmente
+                ));
+
+// Crear borde compuesto para aplicar cada lado con distinto color
+                celda.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(
+                                grosorTop, grosorLeft, grosorBottom, grosorRight,
+                                bordeFuerte
+                        ),
+                        BorderFactory.createMatteBorder(
+                                1, 1, 1, 1,
+                                bordeSuave
+                        )
+                ));
+
 
                 final int f = fila;
                 final int c = col;
