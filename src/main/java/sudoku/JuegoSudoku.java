@@ -77,5 +77,6 @@ public class JuegoSudoku {
                 System.err.println("Error: " + e.getMessage());
             }
         }
+        System.out.println("Gracias por jugar.");
     }
 }
