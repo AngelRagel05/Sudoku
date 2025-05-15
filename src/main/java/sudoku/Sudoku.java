@@ -147,11 +147,48 @@ public class Sudoku {
             for (int col = 0; col < 9; col++) {
                 int val = tablero[fila][col];
                 if (val == 0) return false;
-                if (!esMovimientoValido(fila, col, val)) return false;
+                if (!cumpleReglasSudoku(fila, col, val)) return false;
             }
         }
         return true;
     }
+
+    private boolean cumpleReglasSudoku(int fila, int columna, int valor) {
+        int original = tablero[fila][columna];
+        tablero[fila][columna] = 0;
+
+        // Validar fila
+        for (int c = 0; c < 9; c++) {
+            if (tablero[fila][c] == valor) {
+                tablero[fila][columna] = original;
+                return false;
+            }
+        }
+
+        // Validar columna
+        for (int f = 0; f < 9; f++) {
+            if (tablero[f][columna] == valor) {
+                tablero[fila][columna] = original;
+                return false;
+            }
+        }
+
+        // Validar bloque 3x3
+        int startFila = (fila / 3) * 3;
+        int startCol = (columna / 3) * 3;
+        for (int f = startFila; f < startFila + 3; f++) {
+            for (int c = startCol; c < startCol + 3; c++) {
+                if (tablero[f][c] == valor) {
+                    tablero[fila][columna] = original;
+                    return false;
+                }
+            }
+        }
+
+        tablero[fila][columna] = original;
+        return true;
+    }
+
 
     // Imprime el tablero en consola (para debug)
     public void mostrarTablero() {
