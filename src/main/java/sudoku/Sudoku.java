@@ -131,7 +131,7 @@ public class Sudoku {
         tablero[fila][columna] = valor;
     }
 
-    // Verifica si el sudoku está resuelto (no hay celdas vacías y todo válido)
+    // Verifica si el sudoku está resuelto (no hay celdas vacías y tódo valido)
     public boolean estaResuelto() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
