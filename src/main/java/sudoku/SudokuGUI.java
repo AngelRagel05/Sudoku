@@ -77,18 +77,11 @@ public class SudokuGUI extends JFrame {
                         bordeFuerte // este es necesario pero no afecta si los colores se usan individualmente
                 ));
 
-// Crear borde compuesto para aplicar cada lado con distinto color
-                celda.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(
-                                grosorTop, grosorLeft, grosorBottom, grosorRight,
-                                bordeFuerte
-                        ),
-                        BorderFactory.createMatteBorder(
-                                1, 1, 1, 1,
-                                bordeSuave
-                        )
+//              Crear borde compuesto para aplicar cada lado con distinto color
+                celda.setBorder(BorderFactory.createMatteBorder(
+                        grosorTop, grosorLeft, grosorBottom, grosorRight,
+                        Color.BLACK
                 ));
-
 
                 final int f = fila;
                 final int c = col;

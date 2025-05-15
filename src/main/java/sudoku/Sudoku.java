@@ -15,7 +15,8 @@ public class Sudoku {
         celdasFijas = new boolean[9][9];
     }
 
-    // Genera un tablero válido según la dificultad
+//  METODOS PUBLICOS PRINCIPALES DEL JUEGO
+//  Genera un tablero válido según la dificultad
     public void generarTablero(String dificultad) {
         // Limpiar tablero y celdas fijas
         for (int i = 0; i < 9; i++) {
@@ -82,45 +83,7 @@ public class Sudoku {
         }
     }
 
-//    Metodo para generar numeros random
-    private int[] generarNumerosAleatorios() {
-        int[] numeros = {1,2,3,4,5,6,7,8,9};
-        Random rand = new Random();
-
-        for (int i = 0; i < numeros.length; i++) {
-            int j = rand.nextInt(numeros.length);
-            int temp = numeros[i];
-            numeros[i] = numeros[j];
-            numeros[j] = temp;
-        }
-        return numeros;
-    }
-
-
-    // Genera un tablero completo válido (backtracking)
-    private boolean generarTableroCompleto() {
-        for (int fila = 0; fila < 9; fila++) {
-            for (int col = 0; col < 9; col++) {
-                if (tablero[fila][col] == 0) {
-                    int[] numeros = generarNumerosAleatorios();
-                    for (int num : numeros) {
-                        if (esMovimientoValido(fila, col, num)) {
-                            tablero[fila][col] = num;
-                            if (generarTableroCompleto()) {
-                                return true;
-                            } else {
-                                tablero[fila][col] = 0;
-                            }
-                        }
-                    }
-                    return false; // ningún número válido, retroceder
-                }
-            }
-        }
-        return true; // tablero completo
-    }
-
-    // Valida si el movimiento es válido según las reglas Sudoku
+//  Valida si el movimiento es válido según las reglas Sudoku
     public boolean esMovimientoValido(int fila, int columna, int valor) {
 
 //        Compruebo que el número añadido esté entre el 1 y 9
@@ -162,7 +125,7 @@ public class Sudoku {
         return true;
     }
 
-    // Coloca un número en el tablero si es válido, 0 borra la celda
+//  Coloca un número en el tablero si es válido, 0 borra la celda
     public void colocarNumero(int fila, int columna, int valor) {
         if (valor == 0) {
             tablero[fila][columna] = 0;
@@ -175,7 +138,7 @@ public class Sudoku {
         tablero[fila][columna] = valor;
     }
 
-    // Verifica si el sudoku está resuelto (no hay celdas vacías y tódo valido)
+//  Verifica si el sudoku está resuelto (no hay celdas vacías y tódo valido)
     public boolean estaResuelto() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
@@ -187,36 +150,22 @@ public class Sudoku {
         return true;
     }
 
-//    Resuelve el Sudoku
-    private boolean resolver() {
+//  Imprime el tablero en consola (para debug)
+    public void mostrarTablero() {
         for (int fila = 0; fila < 9; fila++) {
+            if (fila % 3 == 0) System.out.println("+-------+-------+-------+");
             for (int col = 0; col < 9; col++) {
-                if (tablero[fila][col] == 0) {
-                    for (int num = 1; num <= 9; num++) {
-                        if (cumpleReglasSudoku(fila, col, num)) {
-                            tablero[fila][col] = num;
-                            if (resolver()) {
-                                return true;
-                            } else {
-                                tablero[fila][col] = 0;
-                            }
-                        }
-                    }
-                    return false;
-                }
+                if (col % 3 == 0) System.out.print("| ");
+                System.out.print(tablero[fila][col] == 0 ? ". " : tablero[fila][col] + " ");
             }
+            System.out.println("|");
         }
-        return true;
+        System.out.println("+-------+-------+-------+");
     }
 
-    private int[][] copiarTablero() {
-        int[][] copia = new int[9][9];
-        for (int i = 0; i < 9; i++) {
-            System.arraycopy(tablero[i], 0, copia[i], 0, 9);
-        }
-        return copia;
-    }
 
+
+//  METODOS AUXILIARES DE VALIDACION INTERNA
     private boolean cumpleReglasSudoku(int fila, int columna, int valor) {
         int original = tablero[fila][columna];
         tablero[fila][columna] = 0;
@@ -253,16 +202,73 @@ public class Sudoku {
         return true;
     }
 
-    // Imprime el tablero en consola (para debug)
-    public void mostrarTablero() {
-        for (int fila = 0; fila < 9; fila++) {
-            if (fila % 3 == 0) System.out.println("+-------+-------+-------+");
-            for (int col = 0; col < 9; col++) {
-                if (col % 3 == 0) System.out.print("| ");
-                System.out.print(tablero[fila][col] == 0 ? ". " : tablero[fila][col] + " ");
-            }
-            System.out.println("|");
+    private int[][] copiarTablero() {
+        int[][] copia = new int[9][9];
+        for (int i = 0; i < 9; i++) {
+            System.arraycopy(tablero[i], 0, copia[i], 0, 9);
         }
-        System.out.println("+-------+-------+-------+");
+        return copia;
+    }
+
+
+
+//  METODOS INTERNOS DEL GENERADOR Y RESOLUCION
+//  Genera un tablero completo válido (backtracking)
+    private boolean generarTableroCompleto() {
+        for (int fila = 0; fila < 9; fila++) {
+            for (int col = 0; col < 9; col++) {
+                if (tablero[fila][col] == 0) {
+                    int[] numeros = generarNumerosAleatorios();
+                    for (int num : numeros) {
+                        if (esMovimientoValido(fila, col, num)) {
+                            tablero[fila][col] = num;
+                            if (generarTableroCompleto()) {
+                                return true;
+                            } else {
+                                tablero[fila][col] = 0;
+                            }
+                        }
+                    }
+                    return false; // ningún número válido, retroceder
+                }
+            }
+        }
+        return true; // tablero completo
+    }
+
+//  Metodo para generar numeros random
+    private int[] generarNumerosAleatorios() {
+        int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        Random rand = new Random();
+
+        for (int i = 0; i < numeros.length; i++) {
+            int j = rand.nextInt(numeros.length);
+            int temp = numeros[i];
+            numeros[i] = numeros[j];
+            numeros[j] = temp;
+        }
+        return numeros;
+    }
+
+//  Resuelve el Sudoku
+    private boolean resolver() {
+        for (int fila = 0; fila < 9; fila++) {
+            for (int col = 0; col < 9; col++) {
+                if (tablero[fila][col] == 0) {
+                    for (int num = 1; num <= 9; num++) {
+                        if (cumpleReglasSudoku(fila, col, num)) {
+                            tablero[fila][col] = num;
+                            if (resolver()) {
+                                return true;
+                            } else {
+                                tablero[fila][col] = 0;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
