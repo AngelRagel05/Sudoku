@@ -1,18 +1,19 @@
 package sudoku;
 
 import javax.swing.*;
-import javax.swing.border.MatteBorder;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.*;
 
 public class SudokuGUI extends JFrame {
 
     private Sudoku sudoku;
-    private JTextField[][] celdas = new JTextField[9][9];
+    private SudokuCell[][] celdas = new SudokuCell[9][9];
     private JPanel panelTablero;
-    private int numeroSeleccionado = 1; // Número seleccionado por defecto
+    private int numeroSeleccionado = 1;
     private JButton[] botonesNumeros = new JButton[9];
+    private boolean modoNotas = false; // false = poner número definitivo, true = notas
 
     public SudokuGUI() {
         sudoku = new Sudoku();
@@ -38,7 +39,7 @@ public class SudokuGUI extends JFrame {
         sudoku.generarTablero(dificultad);
 
         setTitle("Sudoku - Juego");
-        setSize(600, 750);
+        setSize(650, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -52,9 +53,8 @@ public class SudokuGUI extends JFrame {
 
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
-                JTextField celda = new JTextField();
-                celda.setHorizontalAlignment(JTextField.CENTER);
-                celda.setFont(font);
+                boolean esFija = sudoku.celdasFijas[fila][col];
+                SudokuCell celda = new SudokuCell(esFija);
 
                 // Bordes con CompoundBorder para bloques 3x3
                 int top = (fila % 3 == 0) ? 3 : 1;
@@ -70,25 +70,26 @@ public class SudokuGUI extends JFrame {
                 final int f = fila;
                 final int c = col;
 
-                celda.setEditable(false); // No editable, se usa click para poner número
-
                 celda.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        if (!sudoku.celdasFijas[f][c]) {
-                            try {
-                                if (sudoku.esMovimientoValido(f, c, numeroSeleccionado)) {
-                                    sudoku.colocarNumero(f, c, numeroSeleccionado);
-                                    actualizarTablero();
-                                } else {
-                                    JOptionPane.showMessageDialog(SudokuGUI.this,
-                                            "Movimiento inválido para el número seleccionado.",
-                                            "Error",
-                                            JOptionPane.ERROR_MESSAGE);
-                                }
-                            } catch (Exception ex) {
+                        if (celda.esFija()) return; // No modificar fija
+
+                        if (modoNotas) {
+                            // Toggle nota
+                            celda.toggleNota(numeroSeleccionado);
+                            // Si tiene número definitivo, borrarlo
+                            celda.setNumeroDefinitivo(null);
+                        } else {
+                            // Poner número definitivo
+                            if (sudoku.esMovimientoValido(f, c, numeroSeleccionado)) {
+                                sudoku.colocarNumero(f, c, numeroSeleccionado);
+                                celda.setNumeroDefinitivo(numeroSeleccionado);
+                                celda.clearNotas();
+                                actualizarTablero();
+                            } else {
                                 JOptionPane.showMessageDialog(SudokuGUI.this,
-                                        ex.getMessage(),
+                                        "Movimiento inválido para el número seleccionado.",
                                         "Error",
                                         JOptionPane.ERROR_MESSAGE);
                             }
@@ -102,6 +103,12 @@ public class SudokuGUI extends JFrame {
         }
 
         JPanel panelNumeros = crearSelectorNumeros();
+
+        JButton btnModoNotas = new JButton("Modo Notas: OFF");
+        btnModoNotas.addActionListener(e -> {
+            modoNotas = !modoNotas;
+            btnModoNotas.setText(modoNotas ? "Modo Notas: ON" : "Modo Notas: OFF");
+        });
 
         JButton btnCheck = new JButton("Comprobar solución");
         btnCheck.addActionListener(e -> {
@@ -150,6 +157,7 @@ public class SudokuGUI extends JFrame {
         });
 
         JPanel panelBotones = new JPanel();
+        panelBotones.add(btnModoNotas);
         panelBotones.add(btnCheck);
         panelBotones.add(btnReiniciar);
         panelBotones.add(btnResolver);
@@ -175,7 +183,7 @@ public class SudokuGUI extends JFrame {
             botonesNumeros[i - 1] = btn;
             panelNumeros.add(btn);
         }
-        actualizarSelectorNumeros(); // Marca el botón 1 por defecto
+        actualizarSelectorNumeros(); // Marca botón 1 por defecto
         return panelNumeros;
     }
 
@@ -192,35 +200,16 @@ public class SudokuGUI extends JFrame {
     private void actualizarTablero() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
+                SudokuCell celda = celdas[fila][col];
+
+                // Sincronizar número definitivo desde sudoku.tablero (por si se reinicia)
                 int valor = sudoku.tablero[fila][col];
-                JTextField celda = celdas[fila][col];
-
-                // Establecer texto
-                celda.setText(valor != 0 ? String.valueOf(valor) : "");
-
-                if (sudoku.celdasFijas[fila][col]) {
-                    // Celdas fijas (no modificables)
-                    celda.setEditable(false);
-                    celda.setForeground(Color.BLACK);
-                    celda.setBackground(new Color(220, 220, 220)); // gris claro
-                    celda.setFont(new Font("SansSerif", Font.BOLD, 20));
+                if (valor != 0) {
+                    celda.setNumeroDefinitivo(valor);
+                    celda.clearNotas();
                 } else {
-                    // Celdas libres (modificables)
-                    celda.setEditable(false);
-                    celda.setForeground(Color.BLACK);
-
-                    // Si el valor es válido para esta posición, verde, si no, amarillo
-                    try {
-                        if (valor != 0 && sudoku.esMovimientoValido(fila, col, valor)) {
-                            celda.setBackground(new Color(180, 255, 180)); // verde claro
-                        } else {
-                            celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
-                        }
-                    } catch (Exception e) {
-                        celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
-                    }
-
-                    celda.setFont(new Font("SansSerif", Font.PLAIN, 20));
+                    celda.setNumeroDefinitivo(null);
+                    // No borramos notas para no perderlas al actualizar
                 }
             }
         }
