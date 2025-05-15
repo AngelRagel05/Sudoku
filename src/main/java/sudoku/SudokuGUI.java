@@ -13,7 +13,7 @@ public class SudokuGUI extends JFrame {
     private JPanel panelTablero;
     private int numeroSeleccionado = 1;
     private JButton[] botonesNumeros = new JButton[9];
-    private boolean modoNotas = false; // false = poner número definitivo, true = notas
+    private boolean modoNotas = false;
 
     public SudokuGUI() {
         sudoku = new Sudoku();
@@ -56,7 +56,6 @@ public class SudokuGUI extends JFrame {
                 boolean esFija = sudoku.celdasFijas[fila][col];
                 SudokuCell celda = new SudokuCell(esFija);
 
-                // Bordes con CompoundBorder para bloques 3x3
                 int top = (fila % 3 == 0) ? 3 : 1;
                 int left = (col % 3 == 0) ? 3 : 1;
                 int bottom = (fila == 8) ? 3 : 1;
@@ -73,26 +72,17 @@ public class SudokuGUI extends JFrame {
                 celda.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        if (celda.esFija()) return; // No modificar fija
+                        if (celda.esFija()) return;
 
                         if (modoNotas) {
-                            // Toggle nota
                             celda.toggleNota(numeroSeleccionado);
-                            // Si tiene número definitivo, borrarlo
                             celda.setNumeroDefinitivo(null);
                         } else {
-                            // Poner número definitivo
-                            if (sudoku.esMovimientoValido(f, c, numeroSeleccionado)) {
-                                sudoku.colocarNumero(f, c, numeroSeleccionado);
-                                celda.setNumeroDefinitivo(numeroSeleccionado);
-                                celda.clearNotas();
-                                actualizarTablero();
-                            } else {
-                                JOptionPane.showMessageDialog(SudokuGUI.this,
-                                        "Movimiento inválido para el número seleccionado.",
-                                        "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                            }
+                            // Colocar sin validar para evitar popup error
+                            sudoku.colocarNumeroSinValidar(f, c, numeroSeleccionado);
+                            celda.setNumeroDefinitivo(numeroSeleccionado);
+                            celda.clearNotas();
+                            actualizarTablero();
                         }
                     }
                 });
@@ -201,15 +191,33 @@ public class SudokuGUI extends JFrame {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 SudokuCell celda = celdas[fila][col];
-
-                // Sincronizar número definitivo desde sudoku.tablero (por si se reinicia)
                 int valor = sudoku.tablero[fila][col];
+
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
                     celda.clearNotas();
+
+                    if (sudoku.celdasFijas[fila][col]) {
+                        celda.setBackground(new Color(220, 220, 220));
+                    } else {
+                        boolean valido = false;
+                        try {
+                            int valorOriginal = sudoku.tablero[fila][col];
+                            sudoku.tablero[fila][col] = 0;
+                            valido = sudoku.esMovimientoValido(fila, col, valor);
+                            sudoku.tablero[fila][col] = valorOriginal;
+                        } catch (Exception e) {
+                            valido = false;
+                        }
+                        if (valido) {
+                            celda.setBackground(new Color(180, 255, 180)); // verde claro
+                        } else {
+                            celda.setBackground(new Color(255, 180, 180)); // rojo claro
+                        }
+                    }
                 } else {
                     celda.setNumeroDefinitivo(null);
-                    // No borramos notas para no perderlas al actualizar
+                    celda.setBackground(Color.WHITE);
                 }
             }
         }

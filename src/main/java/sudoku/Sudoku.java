@@ -163,6 +163,11 @@ public class Sudoku {
         System.out.println("+-------+-------+-------+");
     }
 
+    public void colocarNumeroSinValidar(int fila, int columna, int valor) {
+        tablero[fila][columna] = valor;
+    }
+
+
 
     //  METODOS AUXILIARES DE VALIDACION INTERNA
     private boolean cumpleReglasSudoku(int fila, int columna, int valor) {
