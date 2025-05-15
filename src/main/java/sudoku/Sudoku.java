@@ -1,5 +1,8 @@
 package sudoku;
 
+import sudoku.excepciones.EntradaFueraDeRangoException;
+import sudoku.excepciones.MovimientoInvalidoException;
+
 import java.util.Random;
 
 public class Sudoku {
