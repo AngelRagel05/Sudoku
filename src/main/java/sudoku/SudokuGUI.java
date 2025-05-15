@@ -161,9 +161,21 @@ public class SudokuGUI extends JFrame {
             actualizarTablero();
         });
 
+        JButton btnResolver = new JButton("Resolver Sudoku");
+        btnResolver.addActionListener(e -> {
+            if (sudoku.resolver()) {
+                actualizarTablero();
+                JOptionPane.showMessageDialog(this, "Sudoku resuelto correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo resolver el Sudoku.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         JPanel panelBotones = new JPanel();
         panelBotones.add(btnCheck);
         panelBotones.add(btnReiniciar);
+        panelBotones.add(btnResolver);
 
         getContentPane().setLayout(new BorderLayout(10, 10));
         getContentPane().add(panelTablero, BorderLayout.CENTER);

@@ -15,7 +15,7 @@ public class Sudoku {
         celdasFijas = new boolean[9][9];
     }
 
-//  METODOS PUBLICOS PRINCIPALES DEL JUEGO
+    //  METODOS PUBLICOS PRINCIPALES DEL JUEGO
 //  Genera un tablero válido según la dificultad
     public void generarTablero(String dificultad) {
         // Limpiar tablero y celdas fijas
@@ -83,7 +83,7 @@ public class Sudoku {
         }
     }
 
-//  Valida si el movimiento es válido según las reglas Sudoku
+    //  Valida si el movimiento es válido según las reglas Sudoku
     public boolean esMovimientoValido(int fila, int columna, int valor) {
 
 //        Compruebo que el número añadido esté entre el 1 y 9
@@ -125,7 +125,7 @@ public class Sudoku {
         return true;
     }
 
-//  Coloca un número en el tablero si es válido, 0 borra la celda
+    //  Coloca un número en el tablero si es válido, 0 borra la celda
     public void colocarNumero(int fila, int columna, int valor) {
         if (valor == 0) {
             tablero[fila][columna] = 0;
@@ -138,7 +138,7 @@ public class Sudoku {
         tablero[fila][columna] = valor;
     }
 
-//  Verifica si el sudoku está resuelto (no hay celdas vacías y tódo valido)
+    //  Verifica si el sudoku está resuelto (no hay celdas vacías y tódo valido)
     public boolean estaResuelto() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
@@ -150,7 +150,7 @@ public class Sudoku {
         return true;
     }
 
-//  Imprime el tablero en consola (para debug)
+    //  Imprime el tablero en consola (para debug)
     public void mostrarTablero() {
         for (int fila = 0; fila < 9; fila++) {
             if (fila % 3 == 0) System.out.println("+-------+-------+-------+");
@@ -164,8 +164,7 @@ public class Sudoku {
     }
 
 
-
-//  METODOS AUXILIARES DE VALIDACION INTERNA
+    //  METODOS AUXILIARES DE VALIDACION INTERNA
     private boolean cumpleReglasSudoku(int fila, int columna, int valor) {
         int original = tablero[fila][columna];
         tablero[fila][columna] = 0;
@@ -211,8 +210,7 @@ public class Sudoku {
     }
 
 
-
-//  METODOS INTERNOS DEL GENERADOR Y RESOLUCION
+    //  METODOS INTERNOS DEL GENERADOR Y RESOLUCION
 //  Genera un tablero completo válido (backtracking)
     private boolean generarTableroCompleto() {
         for (int fila = 0; fila < 9; fila++) {
@@ -236,7 +234,7 @@ public class Sudoku {
         return true; // tablero completo
     }
 
-//  Metodo para generar numeros random
+    //  Metodo para generar numeros random
     private int[] generarNumerosAleatorios() {
         int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         Random rand = new Random();
@@ -250,15 +248,19 @@ public class Sudoku {
         return numeros;
     }
 
-//  Resuelve el Sudoku
-    private boolean resolver() {
+    //  Resuelve el Sudoku
+    public boolean resolver() {
+        return resolverInterno();
+    }
+
+    private boolean resolverInterno() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 if (tablero[fila][col] == 0) {
                     for (int num = 1; num <= 9; num++) {
                         if (cumpleReglasSudoku(fila, col, num)) {
                             tablero[fila][col] = num;
-                            if (resolver()) {
+                            if (resolverInterno()) {
                                 return true;
                             } else {
                                 tablero[fila][col] = 0;
