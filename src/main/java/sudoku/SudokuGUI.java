@@ -1,19 +1,22 @@
 package sudoku;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.*;
 
 public class SudokuGUI extends JFrame {
 
     private Sudoku sudoku;
-    private JTextField celdas[][] = new JTextField[9][9];
+    private JTextField[][] celdas = new JTextField[9][9];
     private JPanel panelTablero;
+    private int numeroSeleccionado = 1; // Número seleccionado por defecto
+    private JButton[] botonesNumeros = new JButton[9];
 
     public SudokuGUI() {
         sudoku = new Sudoku();
-        String opciones[] = {"Fácil", "Medio", "Difícil"};
+        String[] opciones = {"Fácil", "Medio", "Difícil"};
         int seleccion = JOptionPane.showOptionDialog(
                 null,
                 "Selecciona la dificultad:",
@@ -35,7 +38,7 @@ public class SudokuGUI extends JFrame {
         sudoku.generarTablero(dificultad);
 
         setTitle("Sudoku - Juego");
-        setSize(600, 700);
+        setSize(600, 750);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -53,71 +56,43 @@ public class SudokuGUI extends JFrame {
                 celda.setHorizontalAlignment(JTextField.CENTER);
                 celda.setFont(font);
 
-//                Bordes en los cuadrados 3x3
+                // Bordes con CompoundBorder para bloques 3x3
                 int top = (fila % 3 == 0) ? 3 : 1;
                 int left = (col % 3 == 0) ? 3 : 1;
                 int bottom = (fila == 8) ? 3 : 1;
                 int right = (col == 8) ? 3 : 1;
 
-                Color bordeGrueso = Color.BLACK;
-                Color bordeDelicado = new Color(200, 200, 200);
-
-                Border bordeExterior = BorderFactory.createMatteBorder(top, left, bottom, right, bordeGrueso);
-                Border bordeInterior = BorderFactory.createMatteBorder(1, 1, 1, 1, bordeDelicado);
-
+                MatteBorder bordeExterior = new MatteBorder(top, left, bottom, right, Color.BLACK);
+                MatteBorder bordeInterior = new MatteBorder(1, 1, 1, 1, new Color(200, 200, 200));
                 CompoundBorder compoundBorder = new CompoundBorder(bordeExterior, bordeInterior);
-
                 celda.setBorder(compoundBorder);
 
                 final int f = fila;
                 final int c = col;
 
-                celda.addKeyListener(new KeyAdapter() {
+                celda.setEditable(false); // No editable, se usa click para poner número
+
+                celda.addMouseListener(new MouseAdapter() {
                     @Override
-                    public void keyReleased(KeyEvent e) {
-                        String texto = celda.getText().trim();
-
-                        if (texto.isEmpty()) {
-                            sudoku.colocarNumero(f, c, 0);
-                            actualizarTablero();
-                            return;
-                        }
-
-                        try {
-                            int num = Integer.parseInt(texto);
-                            if (num < 1 || num > 9) {
-                                throw new NumberFormatException();
-                            }
-
-                            if (!sudoku.esMovimientoValido(f, c, num)) {
+                    public void mouseClicked(MouseEvent e) {
+                        if (!sudoku.celdasFijas[f][c]) {
+                            try {
+                                if (sudoku.esMovimientoValido(f, c, numeroSeleccionado)) {
+                                    sudoku.colocarNumero(f, c, numeroSeleccionado);
+                                    actualizarTablero();
+                                } else {
+                                    JOptionPane.showMessageDialog(SudokuGUI.this,
+                                            "Movimiento inválido para el número seleccionado.",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (Exception ex) {
                                 JOptionPane.showMessageDialog(SudokuGUI.this,
-                                        "Movimiento inválido: no puedes poner " + num +
-                                                " en fila " + (f + 1) + ", columna " + (c + 1),
+                                        ex.getMessage(),
                                         "Error",
                                         JOptionPane.ERROR_MESSAGE);
-                                celda.setText(""); // limpiar celda
-                                sudoku.colocarNumero(f, c, 0);
-                            } else {
-                                sudoku.colocarNumero(f, c, num);
                             }
-
-                        } catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(SudokuGUI.this,
-                                    "Introduce un número del 1 al 9.",
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
-                            celda.setText("");
-                            sudoku.colocarNumero(f, c, 0);
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(SudokuGUI.this,
-                                    ex.getMessage(),
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
-                            celda.setText("");
-                            sudoku.colocarNumero(f, c, 0);
                         }
-
-                        actualizarTablero();
                     }
                 });
 
@@ -125,6 +100,8 @@ public class SudokuGUI extends JFrame {
                 panelTablero.add(celda);
             }
         }
+
+        JPanel panelNumeros = crearSelectorNumeros();
 
         JButton btnCheck = new JButton("Comprobar solución");
         btnCheck.addActionListener(e -> {
@@ -178,8 +155,38 @@ public class SudokuGUI extends JFrame {
         panelBotones.add(btnResolver);
 
         getContentPane().setLayout(new BorderLayout(10, 10));
+        getContentPane().add(panelNumeros, BorderLayout.NORTH);
         getContentPane().add(panelTablero, BorderLayout.CENTER);
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
+    }
+
+    private JPanel crearSelectorNumeros() {
+        JPanel panelNumeros = new JPanel(new GridLayout(1, 9, 5, 5));
+        Font fontBotones = new Font("SansSerif", Font.BOLD, 18);
+
+        for (int i = 1; i <= 9; i++) {
+            int num = i;
+            JButton btn = new JButton(String.valueOf(num));
+            btn.setFont(fontBotones);
+            btn.addActionListener(e -> {
+                numeroSeleccionado = num;
+                actualizarSelectorNumeros();
+            });
+            botonesNumeros[i - 1] = btn;
+            panelNumeros.add(btn);
+        }
+        actualizarSelectorNumeros(); // Marca el botón 1 por defecto
+        return panelNumeros;
+    }
+
+    private void actualizarSelectorNumeros() {
+        for (int i = 0; i < botonesNumeros.length; i++) {
+            if (i == numeroSeleccionado - 1) {
+                botonesNumeros[i].setBackground(Color.CYAN);
+            } else {
+                botonesNumeros[i].setBackground(null);
+            }
+        }
     }
 
     private void actualizarTablero() {
@@ -199,13 +206,23 @@ public class SudokuGUI extends JFrame {
                     celda.setFont(new Font("SansSerif", Font.BOLD, 20));
                 } else {
                     // Celdas libres (modificables)
-                    celda.setEditable(true);
+                    celda.setEditable(false);
                     celda.setForeground(Color.BLACK);
-                    celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
+
+                    // Si el valor es válido para esta posición, verde, si no, amarillo
+                    try {
+                        if (valor != 0 && sudoku.esMovimientoValido(fila, col, valor)) {
+                            celda.setBackground(new Color(180, 255, 180)); // verde claro
+                        } else {
+                            celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
+                        }
+                    } catch (Exception e) {
+                        celda.setBackground(new Color(255, 255, 200)); // amarillo pálido
+                    }
+
                     celda.setFont(new Font("SansSerif", Font.PLAIN, 20));
                 }
             }
         }
     }
-
 }
