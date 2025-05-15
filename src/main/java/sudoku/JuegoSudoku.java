@@ -23,11 +23,12 @@ public class JuegoSudoku {
 //        Genero el tablero
         sudoku.generarTablero(dificultad);
         System.out.println("Tablero Generado:");
+        sudoku.mostrarTablero();
 
         while (!check) {
 
 //            Le pido al usuario que introduzca su movimiento
-            System.out.println("\nIntroduce tu movimiento (fila columna valor) o 'salir' para terminar:");
+            System.out.println("\nIntroduce tu movimiento (columna fila valor) o 'salir' para terminar:");
             String linea = sc.nextLine().trim();
 
 //            Si el usuario introduce 'salir' se acaba la aplicación
@@ -49,8 +50,8 @@ public class JuegoSudoku {
             try {
 
 //                Parseo los número de String a Int
-                int fila = Integer.parseInt(partes[0]) - 1;
-                int columna = Integer.parseInt(partes[1]) - 1;
+                int columna = Integer.parseInt(partes[0]) - 1;
+                int fila = Integer.parseInt(partes[1]) - 1;
                 int valor = Integer.parseInt(partes[2]);
 
 //                Valido si es correcto o no
