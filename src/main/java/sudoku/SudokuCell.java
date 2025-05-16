@@ -75,15 +75,7 @@ public class SudokuCell extends JTextField {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (celdaFija) {
-            setBackground(new Color(220, 220, 220));
-        } else if (mostrarCorrecto) {
-            setBackground(new Color(180, 255, 180));
-        } else if (mostrarError) {
-            setBackground(new Color(255, 180, 180));
-        } else {
-            setBackground(Color.WHITE);
-        }
+        setBackground(Color.WHITE);
         super.paintComponent(g);
     }
 }

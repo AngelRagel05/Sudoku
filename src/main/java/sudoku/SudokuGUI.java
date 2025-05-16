@@ -193,7 +193,6 @@ public class SudokuGUI extends JFrame {
 
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setEditable(false);
-                        celda.setForeground(Color.BLACK); // texto negro fijo
                     } else {
                         boolean valido;
                         try {
@@ -206,16 +205,13 @@ public class SudokuGUI extends JFrame {
                         }
 
                         if (valido) {
-                            celda.setNumeroDefinitivo(valor);         // primero mostrar el número
-                            celda.setForeground(new Color(0, 150, 0)); // verde oscuro
-                            celda.setEditable(false);                 // luego bloquear edición
-                            sudoku.celdasFijas[fila][col] = true;     // marcar como fija
+                            celda.setNumeroDefinitivo(valor);
+                            celda.setEditable(false);
+                            sudoku.celdasFijas[fila][col] = true;
                         } else {
-                            celda.setNumeroDefinitivo(valor);         // mostrar el número aunque esté mal
-                            celda.setForeground(Color.RED);           // texto rojo
-                            celda.setEditable(true);                  // mantener editable
+                            celda.setNumeroDefinitivo(valor);
+                            celda.setEditable(true);
                         }
-
                     }
 
                 } else {
@@ -225,10 +221,8 @@ public class SudokuGUI extends JFrame {
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setText("");
                         celda.setEditable(false);
-                        celda.setForeground(Color.BLACK);
                     } else {
                         celda.setEditable(true);
-                        celda.setForeground(Color.BLACK);
                     }
                 }
             }
