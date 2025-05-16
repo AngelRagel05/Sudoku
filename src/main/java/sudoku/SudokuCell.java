@@ -24,6 +24,12 @@ public class SudokuCell extends JTextField {
         return celdaFija;
     }
 
+    public void setCeldaFija(boolean fija) {
+        this.celdaFija = fija;
+        setEditable(!fija);
+        repaint();
+    }
+
     public void setNumeroDefinitivo(Integer num) {
         this.numeroDefinitivo = num;
         if (num != null) {
@@ -67,16 +73,8 @@ public class SudokuCell extends JTextField {
         repaint();
     }
 
-    public void setCeldaFija(boolean fija) {
-        this.celdaFija = fija;
-        setEditable(!fija);
-        repaint();
-    }
-
-
     @Override
     protected void paintComponent(Graphics g) {
-        // Pintado de fondo con color personalizado si se quiere
         if (celdaFija) {
             setBackground(new Color(220, 220, 220));
         } else if (mostrarCorrecto) {
@@ -86,7 +84,6 @@ public class SudokuCell extends JTextField {
         } else {
             setBackground(Color.WHITE);
         }
-
         super.paintComponent(g);
     }
 }

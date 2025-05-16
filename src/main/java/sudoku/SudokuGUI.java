@@ -58,7 +58,6 @@ public class SudokuGUI extends JFrame {
                 celda.setFont(font);
                 celda.setEditable(!sudoku.celdasFijas[fila][col]);
 
-                // Bordes para bloques 3x3
                 int top = (fila % 3 == 0) ? 3 : 1;
                 int left = (col % 3 == 0) ? 3 : 1;
                 int bottom = (fila == 8) ? 3 : 1;
@@ -78,6 +77,7 @@ public class SudokuGUI extends JFrame {
 
                         if (texto.isEmpty()) {
                             sudoku.colocarNumeroSinValidar(f, c, 0);
+                            celda.setEditable(true); // Permitir escribir cuando está vacía
                             actualizarTablero();
                             return;
                         }
@@ -85,16 +85,29 @@ public class SudokuGUI extends JFrame {
                         if (texto.length() > 1 || !Character.isDigit(texto.charAt(0))) {
                             celda.setText("");
                             sudoku.colocarNumeroSinValidar(f, c, 0);
+                            celda.setEditable(true);
                             actualizarTablero();
                             return;
                         }
 
                         int num = Character.getNumericValue(texto.charAt(0));
-                        if (num >= 1 && num <= 9) {
-                            sudoku.colocarNumeroSinValidar(f, c, num);
-                        } else {
+                        if (num < 1 || num > 9) {
                             celda.setText("");
                             sudoku.colocarNumeroSinValidar(f, c, 0);
+                            celda.setEditable(true);
+                            actualizarTablero();
+                            return;
+                        }
+
+                        try {
+                            sudoku.colocarNumero(f, c, num);
+                            // Número correcto: bloquear celda y marcar fija
+                            celda.setEditable(false);
+                            sudoku.celdasFijas[f][c] = true;
+                        } catch (Exception ex) {
+                            celda.setText("");
+                            sudoku.colocarNumeroSinValidar(f, c, 0);
+                            celda.setEditable(true);
                         }
 
                         actualizarTablero();
@@ -138,7 +151,6 @@ public class SudokuGUI extends JFrame {
 
             sudoku.generarTablero(dificultad);
 
-            // Actualizar el estado de celdas fijas en la GUI
             for (int fila = 0; fila < 9; fila++) {
                 for (int col = 0; col < 9; col++) {
                     celdas[fila][col].setCeldaFija(sudoku.celdasFijas[fila][col]);
@@ -169,34 +181,27 @@ public class SudokuGUI extends JFrame {
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private void actualizarSelectorNumeros() {
-        for (int i = 0; i < botonesNumeros.length; i++) {
-            if (i == numeroSeleccionado - 1) {
-                botonesNumeros[i].setBackground(Color.CYAN);
-            } else {
-                botonesNumeros[i].setBackground(null);
-            }
-        }
-    }
-
     private void actualizarTablero() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 SudokuCell celda = celdas[fila][col];
                 int valor = sudoku.tablero[fila][col];
 
-                // Mostrar número si existe
+                // Resetear flags de color
+                celda.setMostrarError(false);
+                celda.setMostrarCorrecto(false);
+
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
                     celda.clearNotas();
 
                     if (sudoku.celdasFijas[fila][col]) {
-                        // Fija: deshabilitada y gris
+                        celda.setEditable(false);
                         celda.setEnabled(false);
-                        celda.setBackground(new Color(220, 220, 220));
+                        celda.setBackground(new Color(220, 220, 220)); // gris
                     } else {
-                        // Editable: comprobar validez
-                        boolean valido = false;
+                        // Comprobar validez
+                        boolean valido;
                         try {
                             int original = sudoku.tablero[fila][col];
                             sudoku.tablero[fila][col] = 0;
@@ -206,21 +211,28 @@ public class SudokuGUI extends JFrame {
                             valido = false;
                         }
 
+                        if (valido) {
+                            celda.setBackground(new Color(180, 255, 180)); // verde
+                            celda.setEditable(false);
+                            sudoku.celdasFijas[fila][col] = true;
+                        } else {
+                            celda.setBackground(new Color(255, 180, 180)); // rojo
+                            celda.setEditable(true);
+                        }
                         celda.setEnabled(true);
-                        celda.setBackground(valido
-                                ? new Color(180, 255, 180)  // verde si válido
-                                : new Color(255, 180, 180)); // rojo si inválido
                     }
+
                 } else {
-                    // Celda vacía
                     celda.setNumeroDefinitivo(null);
                     celda.clearNotas();
 
                     if (sudoku.celdasFijas[fila][col]) {
-                        celda.setText(""); // asegurarse que no hay basura
+                        celda.setText("");
+                        celda.setEditable(false);
                         celda.setEnabled(false);
                         celda.setBackground(new Color(220, 220, 220));
                     } else {
+                        celda.setEditable(true);
                         celda.setEnabled(true);
                         celda.setBackground(Color.WHITE);
                     }
