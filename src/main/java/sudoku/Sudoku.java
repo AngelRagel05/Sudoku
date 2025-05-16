@@ -31,20 +31,13 @@ public class Sudoku {
             throw new RuntimeException("Error generando tablero completo");
         }
 
-        // Quitar números según dificultad
+        // Determinar cuántas celdas vaciar según dificultad
         int celdasVacias;
         switch (dificultad.toLowerCase()) {
-            case "facil":
-                celdasVacias = 30;
-                break;
-            case "medio":
-                celdasVacias = 40;
-                break;
-            case "dificil":
-                celdasVacias = 50;
-                break;
-            default:
-                celdasVacias = 30;
+            case "facil" -> celdasVacias = 30;
+            case "medio" -> celdasVacias = 40;
+            case "dificil" -> celdasVacias = 50;
+            default -> celdasVacias = 30;
         }
 
         Random rand = new Random();
@@ -62,20 +55,23 @@ public class Sudoku {
             int backup = tablero[fila][col];
             tablero[fila][col] = 0;
 
-            int[][] copia = copiarTablero();
-            if (!resolver()) {
-                // Si no se puede resolver, restauramos la celda
-                tablero[fila][col] = backup;
-            } else {
+            // Copiar el tablero y resolverlo aparte
+            int[][] tempTablero = copiarTablero();
+            Sudoku tempSudoku = new Sudoku();
+            tempSudoku.tablero = tempTablero;
+
+            if (tempSudoku.resolver()) {
+                // El hueco es válido
                 celdasVacias--;
+            } else {
+                // No es resoluble, restauramos
+                tablero[fila][col] = backup;
             }
 
-            tablero = copia; // restauramos el tablero original sin solución propuesta
             intentos--;
         }
 
-
-        // Marcar celdas fijas (las que NO están vacías)
+        // Marcar como fijas las que no estén vacías
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 celdasFijas[i][j] = tablero[i][j] != 0;
