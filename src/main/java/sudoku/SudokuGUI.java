@@ -53,9 +53,12 @@ public class SudokuGUI extends JFrame {
 
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
-                boolean esFija = sudoku.celdasFijas[fila][col];
-                SudokuCell celda = new SudokuCell(esFija);
+                SudokuCell celda = new SudokuCell(sudoku.celdasFijas[fila][col]);
+                celda.setHorizontalAlignment(JTextField.CENTER);
+                celda.setFont(font);
+                celda.setEditable(!sudoku.celdasFijas[fila][col]);
 
+                // Bordes para bloques 3x3
                 int top = (fila % 3 == 0) ? 3 : 1;
                 int left = (col % 3 == 0) ? 3 : 1;
                 int bottom = (fila == 8) ? 3 : 1;
@@ -63,27 +66,38 @@ public class SudokuGUI extends JFrame {
 
                 MatteBorder bordeExterior = new MatteBorder(top, left, bottom, right, Color.BLACK);
                 MatteBorder bordeInterior = new MatteBorder(1, 1, 1, 1, new Color(200, 200, 200));
-                CompoundBorder compoundBorder = new CompoundBorder(bordeExterior, bordeInterior);
-                celda.setBorder(compoundBorder);
+                celda.setBorder(new CompoundBorder(bordeExterior, bordeInterior));
 
                 final int f = fila;
                 final int c = col;
 
-                celda.addMouseListener(new MouseAdapter() {
+                celda.addKeyListener(new KeyAdapter() {
                     @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (celda.esFija()) return;
+                    public void keyReleased(KeyEvent e) {
+                        String texto = celda.getText().trim();
 
-                        if (modoNotas) {
-                            celda.toggleNota(numeroSeleccionado);
-                            celda.setNumeroDefinitivo(null);
-                        } else {
-                            // Colocar sin validar para evitar popup error
-                            sudoku.colocarNumeroSinValidar(f, c, numeroSeleccionado);
-                            celda.setNumeroDefinitivo(numeroSeleccionado);
-                            celda.clearNotas();
+                        if (texto.isEmpty()) {
+                            sudoku.colocarNumeroSinValidar(f, c, 0);
                             actualizarTablero();
+                            return;
                         }
+
+                        if (texto.length() > 1 || !Character.isDigit(texto.charAt(0))) {
+                            celda.setText("");
+                            sudoku.colocarNumeroSinValidar(f, c, 0);
+                            actualizarTablero();
+                            return;
+                        }
+
+                        int num = Character.getNumericValue(texto.charAt(0));
+                        if (num >= 1 && num <= 9) {
+                            sudoku.colocarNumeroSinValidar(f, c, num);
+                        } else {
+                            celda.setText("");
+                            sudoku.colocarNumeroSinValidar(f, c, 0);
+                        }
+
+                        actualizarTablero();
                     }
                 });
 
@@ -91,14 +105,6 @@ public class SudokuGUI extends JFrame {
                 panelTablero.add(celda);
             }
         }
-
-        JPanel panelNumeros = crearSelectorNumeros();
-
-        JButton btnModoNotas = new JButton("Modo Notas: OFF");
-        btnModoNotas.addActionListener(e -> {
-            modoNotas = !modoNotas;
-            btnModoNotas.setText(modoNotas ? "Modo Notas: ON" : "Modo Notas: OFF");
-        });
 
         JButton btnCheck = new JButton("Comprobar solución");
         btnCheck.addActionListener(e -> {
@@ -124,14 +130,21 @@ public class SudokuGUI extends JFrame {
                     opciones[0]
             );
 
-            String dificultad;
-            switch (seleccion) {
-                case 1 -> dificultad = "medio";
-                case 2 -> dificultad = "dificil";
-                default -> dificultad = "facil";
-            }
+            String dificultad = switch (seleccion) {
+                case 1 -> "medio";
+                case 2 -> "dificil";
+                default -> "facil";
+            };
 
             sudoku.generarTablero(dificultad);
+
+            // Actualizar el estado de celdas fijas en la GUI
+            for (int fila = 0; fila < 9; fila++) {
+                for (int col = 0; col < 9; col++) {
+                    celdas[fila][col].setCeldaFija(sudoku.celdasFijas[fila][col]);
+                }
+            }
+
             actualizarTablero();
         });
 
@@ -147,34 +160,13 @@ public class SudokuGUI extends JFrame {
         });
 
         JPanel panelBotones = new JPanel();
-        panelBotones.add(btnModoNotas);
         panelBotones.add(btnCheck);
         panelBotones.add(btnReiniciar);
         panelBotones.add(btnResolver);
 
         getContentPane().setLayout(new BorderLayout(10, 10));
-        getContentPane().add(panelNumeros, BorderLayout.NORTH);
         getContentPane().add(panelTablero, BorderLayout.CENTER);
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
-    }
-
-    private JPanel crearSelectorNumeros() {
-        JPanel panelNumeros = new JPanel(new GridLayout(1, 9, 5, 5));
-        Font fontBotones = new Font("SansSerif", Font.BOLD, 18);
-
-        for (int i = 1; i <= 9; i++) {
-            int num = i;
-            JButton btn = new JButton(String.valueOf(num));
-            btn.setFont(fontBotones);
-            btn.addActionListener(e -> {
-                numeroSeleccionado = num;
-                actualizarSelectorNumeros();
-            });
-            botonesNumeros[i - 1] = btn;
-            panelNumeros.add(btn);
-        }
-        actualizarSelectorNumeros(); // Marca botón 1 por defecto
-        return panelNumeros;
     }
 
     private void actualizarSelectorNumeros() {
@@ -193,31 +185,45 @@ public class SudokuGUI extends JFrame {
                 SudokuCell celda = celdas[fila][col];
                 int valor = sudoku.tablero[fila][col];
 
+                // Mostrar número si existe
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
                     celda.clearNotas();
 
                     if (sudoku.celdasFijas[fila][col]) {
+                        // Fija: deshabilitada y gris
+                        celda.setEnabled(false);
                         celda.setBackground(new Color(220, 220, 220));
                     } else {
+                        // Editable: comprobar validez
                         boolean valido = false;
                         try {
-                            int valorOriginal = sudoku.tablero[fila][col];
+                            int original = sudoku.tablero[fila][col];
                             sudoku.tablero[fila][col] = 0;
                             valido = sudoku.esMovimientoValido(fila, col, valor);
-                            sudoku.tablero[fila][col] = valorOriginal;
+                            sudoku.tablero[fila][col] = original;
                         } catch (Exception e) {
                             valido = false;
                         }
-                        if (valido) {
-                            celda.setBackground(new Color(180, 255, 180)); // verde claro
-                        } else {
-                            celda.setBackground(new Color(255, 180, 180)); // rojo claro
-                        }
+
+                        celda.setEnabled(true);
+                        celda.setBackground(valido
+                                ? new Color(180, 255, 180)  // verde si válido
+                                : new Color(255, 180, 180)); // rojo si inválido
                     }
                 } else {
+                    // Celda vacía
                     celda.setNumeroDefinitivo(null);
-                    celda.setBackground(Color.WHITE);
+                    celda.clearNotas();
+
+                    if (sudoku.celdasFijas[fila][col]) {
+                        celda.setText(""); // asegurarse que no hay basura
+                        celda.setEnabled(false);
+                        celda.setBackground(new Color(220, 220, 220));
+                    } else {
+                        celda.setEnabled(true);
+                        celda.setBackground(Color.WHITE);
+                    }
                 }
             }
         }
