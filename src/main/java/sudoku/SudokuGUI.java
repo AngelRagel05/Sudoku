@@ -187,20 +187,14 @@ public class SudokuGUI extends JFrame {
                 SudokuCell celda = celdas[fila][col];
                 int valor = sudoku.tablero[fila][col];
 
-                // Resetear flags de color
-                celda.setMostrarError(false);
-                celda.setMostrarCorrecto(false);
-
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
                     celda.clearNotas();
 
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setEditable(false);
-                        celda.setEnabled(false);
-                        celda.setBackground(new Color(220, 220, 220)); // gris
+                        celda.setForeground(Color.BLACK); // texto negro fijo
                     } else {
-                        // Comprobar validez
                         boolean valido;
                         try {
                             int original = sudoku.tablero[fila][col];
@@ -212,14 +206,16 @@ public class SudokuGUI extends JFrame {
                         }
 
                         if (valido) {
-                            celda.setBackground(new Color(180, 255, 180)); // verde
-                            celda.setEditable(false);
-                            sudoku.celdasFijas[fila][col] = true;
+                            celda.setNumeroDefinitivo(valor);         // primero mostrar el número
+                            celda.setForeground(new Color(0, 150, 0)); // verde oscuro
+                            celda.setEditable(false);                 // luego bloquear edición
+                            sudoku.celdasFijas[fila][col] = true;     // marcar como fija
                         } else {
-                            celda.setBackground(new Color(255, 180, 180)); // rojo
-                            celda.setEditable(true);
+                            celda.setNumeroDefinitivo(valor);         // mostrar el número aunque esté mal
+                            celda.setForeground(Color.RED);           // texto rojo
+                            celda.setEditable(true);                  // mantener editable
                         }
-                        celda.setEnabled(true);
+
                     }
 
                 } else {
@@ -229,12 +225,10 @@ public class SudokuGUI extends JFrame {
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setText("");
                         celda.setEditable(false);
-                        celda.setEnabled(false);
-                        celda.setBackground(new Color(220, 220, 220));
+                        celda.setForeground(Color.BLACK);
                     } else {
                         celda.setEditable(true);
-                        celda.setEnabled(true);
-                        celda.setBackground(Color.WHITE);
+                        celda.setForeground(Color.BLACK);
                     }
                 }
             }
