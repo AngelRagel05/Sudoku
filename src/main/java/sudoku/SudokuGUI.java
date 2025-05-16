@@ -11,8 +11,6 @@ public class SudokuGUI extends JFrame {
     private Sudoku sudoku;
     private SudokuCell[][] celdas = new SudokuCell[9][9];
     private JPanel panelTablero;
-    private boolean modoNotas = false;
-    private JButton btnModoNotas;
 
     public SudokuGUI() {
         sudoku = new Sudoku();
@@ -43,30 +41,7 @@ public class SudokuGUI extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
-        configurarTecladoNotas();
         actualizarTablero();
-    }
-
-    private void configurarTecladoNotas() {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke("N"), "toggleNotas");
-
-        getRootPane().getActionMap().put("toggleNotas", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleModoNotas();
-            }
-        });
-    }
-
-    private void toggleModoNotas() {
-        modoNotas = !modoNotas;
-        String estado = modoNotas ? "ON" : "OFF";
-        btnModoNotas.setText("Modo Notas: " + estado);
-        JOptionPane.showMessageDialog(this,
-                "Modo notas " + (modoNotas ? "activado" : "desactivado") + ".",
-                "Modo Notas",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void initComponents() {
@@ -78,7 +53,7 @@ public class SudokuGUI extends JFrame {
                 SudokuCell celda = new SudokuCell(sudoku.celdasFijas[fila][col]);
                 celda.setHorizontalAlignment(JTextField.CENTER);
                 celda.setFont(font);
-                celda.setEditable(!sudoku.celdasFijas[fila][col]);
+                celda.setCeldaFija(sudoku.celdasFijas[fila][col], false);
 
                 int top = (fila % 3 == 0) ? 3 : 1;
                 int left = (col % 3 == 0) ? 3 : 1;
@@ -97,47 +72,33 @@ public class SudokuGUI extends JFrame {
                     public void keyReleased(KeyEvent e) {
                         char tecla = e.getKeyChar();
 
-                        // No dejar que la tecla 'N' aparezca en la celda
-                        if (tecla == 'N' || tecla == 'n') {
-                            celda.setText("");
-                            toggleModoNotas();
-                            return;
-                        }
-
+                        // Solo aceptar dígitos del 1 al 9
                         if (!Character.isDigit(tecla) || tecla == '0') return;
 
                         int num = Character.getNumericValue(tecla);
 
-                        if (modoNotas) {
-                            celda.toggleNota(num);
-                            celda.setNumeroDefinitivo(null); // para que no se vea número grande
-                        } else {
-                            try {
-                                if (sudoku.esMovimientoValido(f, c, num)) {
-                                    sudoku.colocarNumero(f, c, num);
-                                    celda.setNumeroDefinitivo(num);
-                                    celda.setEditable(false);
-                                    sudoku.celdasFijas[f][c] = true;
-                                } else {
-                                    // Movimiento inválido: solo limpiar la celda sin excepción
-                                    celda.setNumeroDefinitivo(null);
-                                }
-                            } catch (Exception ex) {
-                                celda.setNumeroDefinitivo(null);
+                        try {
+                            if (sudoku.esMovimientoValido(f, c, num)) {
+                                sudoku.colocarNumero(f, c, num);
+                                celda.setNumeroDefinitivo(num);
+                                celda.fijarPorUsuario();      // Pinta verde y bloquea
+                                sudoku.celdasFijas[f][c] = true;  // Marca en lógica que es fija
+                            } else {
+                                celda.setText(""); // Número inválido, borra
                             }
+                        } catch (Exception ex) {
+                            celda.setText(""); // En caso de error, borra
                         }
 
                         actualizarTablero();
                     }
                 });
 
+
                 celdas[fila][col] = celda;
                 panelTablero.add(celda);
             }
         }
-
-        btnModoNotas = new JButton("Modo Notas: OFF");
-        btnModoNotas.addActionListener(e -> toggleModoNotas());
 
         JButton btnCheck = new JButton("Comprobar solución");
         btnCheck.addActionListener(e -> {
@@ -173,7 +134,7 @@ public class SudokuGUI extends JFrame {
 
             for (int fila = 0; fila < 9; fila++) {
                 for (int col = 0; col < 9; col++) {
-                    celdas[fila][col].setCeldaFija(sudoku.celdasFijas[fila][col]);
+                    celdas[fila][col].setCeldaFija(sudoku.celdasFijas[fila][col], false);
                 }
             }
 
@@ -192,7 +153,6 @@ public class SudokuGUI extends JFrame {
         });
 
         JPanel panelBotones = new JPanel();
-        panelBotones.add(btnModoNotas);
         panelBotones.add(btnCheck);
         panelBotones.add(btnReiniciar);
         panelBotones.add(btnResolver);
@@ -210,45 +170,14 @@ public class SudokuGUI extends JFrame {
 
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
-                    celda.clearNotas();
 
-                    if (sudoku.celdasFijas[fila][col]) {
-                        celda.setEditable(false);
-                        celda.setBackground(new Color(189, 189, 189)); // gris claro
-                    } else {
-                        boolean valido;
-                        try {
-                            int original = sudoku.tablero[fila][col];
-                            sudoku.tablero[fila][col] = 0;
-                            valido = sudoku.esMovimientoValido(fila, col, valor);
-                            sudoku.tablero[fila][col] = original;
-                        } catch (Exception e) {
-                            valido = false;
-                        }
+                    boolean fijaOriginal = sudoku.celdasFijas[fila][col];
+                    boolean fijaUsuario = celda.isFijaUsuario();
 
-                        if (valido) {
-                            celda.setNumeroDefinitivo(valor);
-                            celda.setEditable(false);
-                            sudoku.celdasFijas[fila][col] = true;
-                        } else {
-                            celda.setNumeroDefinitivo(valor);
-                            celda.setEditable(true);
-                        }
-
-                        celda.setBackground(Color.WHITE); // editable
-                    }
+                    celda.setCeldaFija(fijaOriginal, fijaUsuario);
                 } else {
                     celda.setNumeroDefinitivo(null);
-                    celda.clearNotas();
-
-                    if (sudoku.celdasFijas[fila][col]) {
-                        celda.setText("");
-                        celda.setEditable(false);
-                        celda.setBackground(new Color(166, 166, 166)); // gris claro
-                    } else {
-                        celda.setEditable(true);
-                        celda.setBackground(Color.WHITE);
-                    }
+                    celda.setCeldaFija(false, false);
                 }
             }
         }
