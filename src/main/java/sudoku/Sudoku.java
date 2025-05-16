@@ -18,57 +18,63 @@ public class Sudoku {
     //  METODOS PUBLICOS PRINCIPALES DEL JUEGO
 //  Genera un tablero válido según la dificultad
     public void generarTablero(String dificultad) {
-        // Limpiar tablero y celdas fijas
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                tablero[i][j] = 0;
-                celdasFijas[i][j] = false;
+        boolean tableroValido = false;
+
+        while (!tableroValido) {
+            // Limpiar tablero y celdas fijas
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    tablero[i][j] = 0;
+                    celdasFijas[i][j] = false;
+                }
             }
-        }
 
-        // Generar tablero completo con backtracking
-        if (!generarTableroCompleto()) {
-            throw new RuntimeException("Error generando tablero completo");
-        }
+            // Generar tablero completo con backtracking
+            if (!generarTableroCompleto()) {
+                continue; // Si no se pudo generar, intentar otra vez
+            }
 
-        // Determinar cuántas celdas vaciar según dificultad
-        int celdasVacias;
-        switch (dificultad.toLowerCase()) {
-            case "facil" -> celdasVacias = 30;
-            case "medio" -> celdasVacias = 40;
-            case "dificil" -> celdasVacias = 50;
-            default -> celdasVacias = 30;
-        }
+            // Determinar cuántas celdas vaciar según dificultad
+            int celdasVacias = switch (dificultad.toLowerCase()) {
+                case "medio" -> 40;
+                case "dificil" -> 50;
+                default -> 30; // fácil por defecto
+            };
 
-        Random rand = new Random();
-        int intentos = 1000;
+            Random rand = new Random();
+            int intentos = 1000;
+            int[][] copiaCompleta = copiarTablero(); // Guardar solución antes de vaciar
 
-        while (celdasVacias > 0 && intentos > 0) {
-            int fila = rand.nextInt(9);
-            int col = rand.nextInt(9);
+            while (celdasVacias > 0 && intentos > 0) {
+                int fila = rand.nextInt(9);
+                int col = rand.nextInt(9);
 
-            if (tablero[fila][col] == 0) {
+                if (tablero[fila][col] == 0) {
+                    intentos--;
+                    continue;
+                }
+
+                int backup = tablero[fila][col];
+                tablero[fila][col] = 0;
+
+                Sudoku temp = new Sudoku();
+                temp.tablero = copiarTablero();
+
+                if (!temp.resolver()) {
+                    tablero[fila][col] = backup; // Restaurar si no tiene solución
+                } else {
+                    celdasVacias--;
+                }
+
                 intentos--;
-                continue;
             }
 
-            int backup = tablero[fila][col];
-            tablero[fila][col] = 0;
-
-            // Copiar el tablero y resolverlo aparte
-            int[][] tempTablero = copiarTablero();
-            Sudoku tempSudoku = new Sudoku();
-            tempSudoku.tablero = tempTablero;
-
-            if (tempSudoku.resolver()) {
-                // El hueco es válido
-                celdasVacias--;
-            } else {
-                // No es resoluble, restauramos
-                tablero[fila][col] = backup;
+            // Verificamos que aún se pueda resolver después de vaciar
+            Sudoku verificador = new Sudoku();
+            verificador.tablero = copiarTablero();
+            if (verificador.resolver()) {
+                tableroValido = true;
             }
-
-            intentos--;
         }
 
         // Marcar como fijas las que no estén vacías
@@ -78,6 +84,7 @@ public class Sudoku {
             }
         }
     }
+
 
     //  Valida si el movimiento es válido según las reglas Sudoku
     public boolean esMovimientoValido(int fila, int columna, int valor) {

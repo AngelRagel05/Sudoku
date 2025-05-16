@@ -12,6 +12,7 @@ public class SudokuGUI extends JFrame {
     private SudokuCell[][] celdas = new SudokuCell[9][9];
     private JPanel panelTablero;
     private boolean modoNotas = false;
+    private JButton btnModoNotas;
 
     public SudokuGUI() {
         sudoku = new Sudoku();
@@ -53,12 +54,19 @@ public class SudokuGUI extends JFrame {
         getRootPane().getActionMap().put("toggleNotas", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modoNotas = !modoNotas;
-                String estado = modoNotas ? "activado" : "desactivado";
-                JOptionPane.showMessageDialog(SudokuGUI.this,
-                        "Modo notas " + estado + ".", "Notas", JOptionPane.INFORMATION_MESSAGE);
+                toggleModoNotas();
             }
         });
+    }
+
+    private void toggleModoNotas() {
+        modoNotas = !modoNotas;
+        String estado = modoNotas ? "ON" : "OFF";
+        btnModoNotas.setText("Modo Notas: " + estado);
+        JOptionPane.showMessageDialog(this,
+                "Modo notas " + (modoNotas ? "activado" : "desactivado") + ".",
+                "Modo Notas",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void initComponents() {
@@ -88,18 +96,32 @@ public class SudokuGUI extends JFrame {
                     @Override
                     public void keyReleased(KeyEvent e) {
                         char tecla = e.getKeyChar();
+
+                        // No dejar que la tecla 'N' aparezca en la celda
+                        if (tecla == 'N' || tecla == 'n') {
+                            celda.setText("");
+                            toggleModoNotas();
+                            return;
+                        }
+
                         if (!Character.isDigit(tecla) || tecla == '0') return;
 
                         int num = Character.getNumericValue(tecla);
 
                         if (modoNotas) {
                             celda.toggleNota(num);
+                            celda.setNumeroDefinitivo(null); // para que no se vea número grande
                         } else {
                             try {
-                                sudoku.colocarNumero(f, c, num);
-                                celda.setNumeroDefinitivo(num);
-                                celda.setEditable(false);
-                                sudoku.celdasFijas[f][c] = true;
+                                if (sudoku.esMovimientoValido(f, c, num)) {
+                                    sudoku.colocarNumero(f, c, num);
+                                    celda.setNumeroDefinitivo(num);
+                                    celda.setEditable(false);
+                                    sudoku.celdasFijas[f][c] = true;
+                                } else {
+                                    // Movimiento inválido: solo limpiar la celda sin excepción
+                                    celda.setNumeroDefinitivo(null);
+                                }
                             } catch (Exception ex) {
                                 celda.setNumeroDefinitivo(null);
                             }
@@ -113,6 +135,9 @@ public class SudokuGUI extends JFrame {
                 panelTablero.add(celda);
             }
         }
+
+        btnModoNotas = new JButton("Modo Notas: OFF");
+        btnModoNotas.addActionListener(e -> toggleModoNotas());
 
         JButton btnCheck = new JButton("Comprobar solución");
         btnCheck.addActionListener(e -> {
@@ -167,6 +192,7 @@ public class SudokuGUI extends JFrame {
         });
 
         JPanel panelBotones = new JPanel();
+        panelBotones.add(btnModoNotas);
         panelBotones.add(btnCheck);
         panelBotones.add(btnReiniciar);
         panelBotones.add(btnResolver);
@@ -188,6 +214,7 @@ public class SudokuGUI extends JFrame {
 
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setEditable(false);
+                        celda.setBackground(new Color(189, 189, 189)); // gris claro
                     } else {
                         boolean valido;
                         try {
@@ -207,6 +234,8 @@ public class SudokuGUI extends JFrame {
                             celda.setNumeroDefinitivo(valor);
                             celda.setEditable(true);
                         }
+
+                        celda.setBackground(Color.WHITE); // editable
                     }
                 } else {
                     celda.setNumeroDefinitivo(null);
@@ -215,8 +244,10 @@ public class SudokuGUI extends JFrame {
                     if (sudoku.celdasFijas[fila][col]) {
                         celda.setText("");
                         celda.setEditable(false);
+                        celda.setBackground(new Color(166, 166, 166)); // gris claro
                     } else {
                         celda.setEditable(true);
+                        celda.setBackground(Color.WHITE);
                     }
                 }
             }
