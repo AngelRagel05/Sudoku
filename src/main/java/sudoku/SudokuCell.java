@@ -10,8 +10,6 @@ public class SudokuCell extends JTextField {
     private Integer numeroDefinitivo = null;
     private Set<Integer> notas = new HashSet<>();
     private boolean celdaFija = false;
-    private boolean mostrarError = false;
-    private boolean mostrarCorrecto = false;
 
     public SudokuCell(boolean fija) {
         this.celdaFija = fija;
@@ -54,28 +52,29 @@ public class SudokuCell extends JTextField {
         repaint();
     }
 
-    public Set<Integer> getNotas() {
-        return new HashSet<>(notas);
-    }
-
     public void clearNotas() {
         notas.clear();
         repaint();
     }
 
-    public void setMostrarError(boolean mostrar) {
-        this.mostrarError = mostrar;
-        repaint();
-    }
-
-    public void setMostrarCorrecto(boolean mostrar) {
-        this.mostrarCorrecto = mostrar;
-        repaint();
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
-        setBackground(Color.WHITE);
         super.paintComponent(g);
+
+        if (numeroDefinitivo != null) return;
+
+        if (!notas.isEmpty()) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
+            int size = getWidth() / 3;
+
+            for (int n = 1; n <= 9; n++) {
+                if (notas.contains(n)) {
+                    int x = ((n - 1) % 3) * size + 5;
+                    int y = ((n - 1) / 3) * size + 15;
+                    g2.drawString(String.valueOf(n), x, y);
+                }
+            }
+        }
     }
 }

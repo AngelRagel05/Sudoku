@@ -11,12 +11,11 @@ public class SudokuGUI extends JFrame {
     private Sudoku sudoku;
     private SudokuCell[][] celdas = new SudokuCell[9][9];
     private JPanel panelTablero;
-    private int numeroSeleccionado = 1;
-    private JButton[] botonesNumeros = new JButton[9];
     private boolean modoNotas = false;
 
     public SudokuGUI() {
         sudoku = new Sudoku();
+
         String[] opciones = {"Fácil", "Medio", "Difícil"};
         int seleccion = JOptionPane.showOptionDialog(
                 null,
@@ -29,12 +28,11 @@ public class SudokuGUI extends JFrame {
                 opciones[0]
         );
 
-        String dificultad;
-        switch (seleccion) {
-            case 1 -> dificultad = "medio";
-            case 2 -> dificultad = "dificil";
-            default -> dificultad = "facil";
-        }
+        String dificultad = switch (seleccion) {
+            case 1 -> "medio";
+            case 2 -> "dificil";
+            default -> "facil";
+        };
 
         sudoku.generarTablero(dificultad);
 
@@ -44,7 +42,23 @@ public class SudokuGUI extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
+        configurarTecladoNotas();
         actualizarTablero();
+    }
+
+    private void configurarTecladoNotas() {
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke("N"), "toggleNotas");
+
+        getRootPane().getActionMap().put("toggleNotas", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modoNotas = !modoNotas;
+                String estado = modoNotas ? "activado" : "desactivado";
+                JOptionPane.showMessageDialog(SudokuGUI.this,
+                        "Modo notas " + estado + ".", "Notas", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
     }
 
     private void initComponents() {
@@ -73,41 +87,22 @@ public class SudokuGUI extends JFrame {
                 celda.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyReleased(KeyEvent e) {
-                        String texto = celda.getText().trim();
+                        char tecla = e.getKeyChar();
+                        if (!Character.isDigit(tecla) || tecla == '0') return;
 
-                        if (texto.isEmpty()) {
-                            sudoku.colocarNumeroSinValidar(f, c, 0);
-                            celda.setEditable(true); // Permitir escribir cuando está vacía
-                            actualizarTablero();
-                            return;
-                        }
+                        int num = Character.getNumericValue(tecla);
 
-                        if (texto.length() > 1 || !Character.isDigit(texto.charAt(0))) {
-                            celda.setText("");
-                            sudoku.colocarNumeroSinValidar(f, c, 0);
-                            celda.setEditable(true);
-                            actualizarTablero();
-                            return;
-                        }
-
-                        int num = Character.getNumericValue(texto.charAt(0));
-                        if (num < 1 || num > 9) {
-                            celda.setText("");
-                            sudoku.colocarNumeroSinValidar(f, c, 0);
-                            celda.setEditable(true);
-                            actualizarTablero();
-                            return;
-                        }
-
-                        try {
-                            sudoku.colocarNumero(f, c, num);
-                            // Número correcto: bloquear celda y marcar fija
-                            celda.setEditable(false);
-                            sudoku.celdasFijas[f][c] = true;
-                        } catch (Exception ex) {
-                            celda.setText("");
-                            sudoku.colocarNumeroSinValidar(f, c, 0);
-                            celda.setEditable(true);
+                        if (modoNotas) {
+                            celda.toggleNota(num);
+                        } else {
+                            try {
+                                sudoku.colocarNumero(f, c, num);
+                                celda.setNumeroDefinitivo(num);
+                                celda.setEditable(false);
+                                sudoku.celdasFijas[f][c] = true;
+                            } catch (Exception ex) {
+                                celda.setNumeroDefinitivo(null);
+                            }
                         }
 
                         actualizarTablero();
@@ -213,7 +208,6 @@ public class SudokuGUI extends JFrame {
                             celda.setEditable(true);
                         }
                     }
-
                 } else {
                     celda.setNumeroDefinitivo(null);
                     celda.clearNotas();
