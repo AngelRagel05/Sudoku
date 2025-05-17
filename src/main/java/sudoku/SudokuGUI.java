@@ -15,24 +15,7 @@ public class SudokuGUI extends JFrame {
     public SudokuGUI() {
         sudoku = new Sudoku();
 
-        String[] opciones = {"Fácil", "Medio", "Difícil"};
-        int seleccion = JOptionPane.showOptionDialog(
-                null,
-                "Selecciona la dificultad:",
-                "Dificultad del Sudoku",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]
-        );
-
-        String dificultad = switch (seleccion) {
-            case 1 -> "medio";
-            case 2 -> "dificil";
-            default -> "facil";
-        };
-
+        String dificultad = pedirDificultad("Selecciona la dificultad:");
         sudoku.generarTablero(dificultad);
 
         setTitle("Sudoku - Juego");
@@ -42,6 +25,25 @@ public class SudokuGUI extends JFrame {
 
         initComponents();
         actualizarTablero();
+    }
+
+    private String pedirDificultad(String mensaje) {
+        String[] opciones = {"Fácil", "Medio", "Difícil"};
+        int seleccion = JOptionPane.showOptionDialog(
+                this,
+                mensaje,
+                "Dificultad",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
+        return switch (seleccion) {
+            case 1 -> "medio";
+            case 2 -> "dificil";
+            default -> "facil";
+        };
     }
 
     private void initComponents() {
@@ -70,9 +72,16 @@ public class SudokuGUI extends JFrame {
                 celda.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyReleased(KeyEvent e) {
-                        char tecla = e.getKeyChar();
+                        if (sudoku.celdasFijas[f][c]) return;
 
-                        // Solo aceptar dígitos del 1 al 9
+                        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+                            sudoku.colocarNumero(f, c, 0);
+                            celda.setNumeroDefinitivo(null);
+                            actualizarTablero();
+                            return;
+                        }
+
+                        char tecla = e.getKeyChar();
                         if (!Character.isDigit(tecla) || tecla == '0') return;
 
                         int num = Character.getNumericValue(tecla);
@@ -81,19 +90,17 @@ public class SudokuGUI extends JFrame {
                             if (sudoku.esMovimientoValido(f, c, num)) {
                                 sudoku.colocarNumero(f, c, num);
                                 celda.setNumeroDefinitivo(num);
-                                celda.fijarPorUsuario();      // Pinta verde y bloquea
-                                sudoku.celdasFijas[f][c] = true;  // Marca en lógica que es fija
+                                celda.marcarComoFijaPorUsuario();
                             } else {
-                                celda.setText(""); // Número inválido, borra
+                                celda.setText("");
                             }
                         } catch (Exception ex) {
-                            celda.setText(""); // En caso de error, borra
+                            celda.setText("");
                         }
 
                         actualizarTablero();
                     }
                 });
-
 
                 celdas[fila][col] = celda;
                 panelTablero.add(celda);
@@ -112,24 +119,7 @@ public class SudokuGUI extends JFrame {
 
         JButton btnReiniciar = new JButton("Reiniciar tablero");
         btnReiniciar.addActionListener(e -> {
-            String[] opciones = {"Fácil", "Medio", "Difícil"};
-            int seleccion = JOptionPane.showOptionDialog(
-                    this,
-                    "Selecciona la dificultad:",
-                    "Reiniciar Sudoku",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opciones,
-                    opciones[0]
-            );
-
-            String dificultad = switch (seleccion) {
-                case 1 -> "medio";
-                case 2 -> "dificil";
-                default -> "facil";
-            };
-
+            String dificultad = pedirDificultad("Selecciona la dificultad:");
             sudoku.generarTablero(dificultad);
 
             for (int fila = 0; fila < 9; fila++) {
@@ -137,7 +127,6 @@ public class SudokuGUI extends JFrame {
                     celdas[fila][col].setCeldaFija(sudoku.celdasFijas[fila][col], false);
                 }
             }
-
             actualizarTablero();
         });
 
@@ -170,10 +159,8 @@ public class SudokuGUI extends JFrame {
 
                 if (valor != 0) {
                     celda.setNumeroDefinitivo(valor);
-
                     boolean fijaOriginal = sudoku.celdasFijas[fila][col];
                     boolean fijaUsuario = celda.isFijaUsuario();
-
                     celda.setCeldaFija(fijaOriginal, fijaUsuario);
                 } else {
                     celda.setNumeroDefinitivo(null);
