@@ -2,10 +2,11 @@ package sudoku;
 
 import sudoku.excepciones.EntradaFueraDeRangoException;
 import sudoku.excepciones.MovimientoInvalidoException;
+import sudoku.interfaces.ISudoku;
 
 import java.util.Random;
 
-public class Sudoku {
+public class Sudoku implements ISudoku {
     public int[][] tablero;
     public boolean[][] celdasFijas;
 

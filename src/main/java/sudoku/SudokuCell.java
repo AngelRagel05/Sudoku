@@ -1,9 +1,11 @@
 package sudoku;
 
+import sudoku.interfaces.ISudokuCell;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class SudokuCell extends JTextField {
+public class SudokuCell extends JTextField implements ISudokuCell {
 
     private Integer numeroDefinitivo = null;
     private boolean fijaOriginal = false;

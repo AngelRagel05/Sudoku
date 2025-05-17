@@ -1,12 +1,14 @@
 package sudoku;
 
+import sudoku.interfaces.ISudokuGUI;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.*;
 
-public class SudokuGUI extends JFrame {
+public class SudokuGUI extends JFrame implements ISudokuGUI {
 
     private Sudoku sudoku;
     private SudokuCell[][] celdas = new SudokuCell[9][9];
@@ -151,7 +153,7 @@ public class SudokuGUI extends JFrame {
         getContentPane().add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private void actualizarTablero() {
+    public void actualizarTablero() {
         for (int fila = 0; fila < 9; fila++) {
             for (int col = 0; col < 9; col++) {
                 SudokuCell celda = celdas[fila][col];

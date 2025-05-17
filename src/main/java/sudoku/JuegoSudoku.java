@@ -1,8 +1,10 @@
 package sudoku;
 
+import sudoku.interfaces.IJuegoSudoku;
+
 import java.util.Scanner;
 
-public class JuegoSudoku {
+public class JuegoSudoku implements IJuegoSudoku {
 
     private Sudoku sudoku;
     private Scanner sc;
