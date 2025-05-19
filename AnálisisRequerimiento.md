@@ -216,28 +216,34 @@ classDiagram
 
 ```
 
-## 6. Matriz de Trazabilidad
+## 6 Matriz de Trazabilidad Ampliada
 
-| **ID Requisito** | **Descripción del Requisito**                            | **ID Objetivo Relacionado** | **Casos de Uso**           | **Diagramas UML Relacionados**                        |
-|------------------|----------------------------------------------------------|-----------------------------|----------------------------|------------------------------------------------------|
-| RF-01            | Generar tablero Sudoku válido con nivel de dificultad.   | OBJ-01                      | Generar tablero            | Diagrama de Casos de Uso (C1)                        |
-| RF-02            | Validar jugadas en tiempo real y mostrar feedback.       | OBJ-01                      | Validar jugada             | Diagrama de Casos de Uso (C2), Diagrama de Secuencia |
-| RF-03            | Guardar y cargar progreso de partidas.                   | OBJ-02                      | Guardar progreso           | Diagrama de Casos de Uso (C3), Diagrama de Secuencia |
-| RF-04            | Solicitar pistas limitadas por partida.                  | OBJ-03                      | Solicitar pista            | Diagrama de Casos de Uso (C4), Diagrama de Actividad |
-| RF-05            | Mostrar estadísticas personales.                         | OBJ-04                      | Ver estadísticas           | Diagrama de Casos de Uso (C5)                        |
-| RF-06            | Mostrar rankings globales actualizados diariamente.      | OBJ-04                      | Ver ranking                | Diagrama de Casos de Uso (C8)                        |
-| RF-07            | Gestión de usuarios: registro, roles, etc.                | OBJ-05                      | Gestionar usuarios         | Diagrama de Casos de Uso (C6)                        |
-| RF-08            | Panel administrador para gestión de retos.               | OBJ-05                      | Gestionar retos            | Diagrama de Casos de Uso (C7)                        |
-| RF-09            | Sistema de notificaciones para alertas.                  | OBJ-03                      | No aplica directamente     | -                                                    |
-| RF-10            | Soporte para múltiples dispositivos (responsive design). | OBJ-01                      | No aplica directamente     | -                                                    |
+### Requisitos Funcionales
 
-| **ID Requisito No Funcional** | **Descripción**                                  | **Impacto en Requisitos Funcionales**                 |
-|-------------------------------|--------------------------------------------------|-------------------------------------------------------|
-| RNF-01                        | Tiempo de respuesta < 150 ms                      | RF-02 Validación rápida de jugadas                     |
-| RNF-02                        | Disponibilidad ≥ 99.5%                            | Todos, especialmente RF-03 y RF-06                     |
-| RNF-03                        | Comunicación segura HTTPS/TLS                      | RF-07 Gestión segura de usuarios                        |
-| RNF-04                        | Accesibilidad WCAG 2.1 AA                         | RF-10 Soporte en dispositivos accesibles               |
-| RNF-05                        | Soporte para 5,000 usuarios concurrentes         | Todos los que implican interacción simultánea         |
-| RNF-06                        | Guardado automático cada 30 segundos              | RF-03 Guardar progreso                                  |
-| RNF-07                        | Encriptación datos sensibles en tránsito y reposo | RF-07 Seguridad de datos de usuario                     |
-| RNF-08                        | Compatibilidad con navegadores modernos y móviles | RF-10 Usabilidad en diferentes dispositivos             |
+| **ID Req.** | **Descripción del Requisito**                            | **Objetivo** | **Casos de Uso**         | **Clases / Métodos**                                                                                      | **Casos de Prueba**                                                                 |
+|-------------|----------------------------------------------------------|--------------|--------------------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| RF-01       | Generar tablero Sudoku válido con nivel de dificultad.   | OBJ-01       | Generar tablero          | `Sudoku.generarTablero()`, `SudokuCell`                                                                    | Verifica cantidad de celdas vacías por dificultad. Tablero generado válido.         |
+| RF-02       | Validar jugadas en tiempo real y mostrar feedback.       | OBJ-01       | Validar jugada           | `Sudoku.esMovimientoValido()`, `Sudoku.colocarNumero()`                                                   | Validar entrada correcta/incorrecta. Prueba de valores fuera de rango.             |
+| RF-03       | Guardar y cargar progreso.                               | OBJ-02       | Guardar progreso         | *[No aparece en las clases actuales — sugerencia de implementar]*                                         | Prueba de persistencia de estado.                                                  |
+| RF-04       | Solicitar pistas limitadas.                              | OBJ-03       | Solicitar pista          | `Sudoku.resolverInterno()` (*parcial* uso como backend para pistas)                                       | Solicitud de pista devuelve celda válida.                                          |
+| RF-05       | Mostrar estadísticas personales.                         | OBJ-04       | Ver estadísticas         | *[No implementado — se puede añadir una clase `Estadisticas`]*                                            | Número de partidas, tiempos, pistas usadas.                                        |
+| RF-06       | Rankings globales.                                       | OBJ-04       | Ver ranking              | *[No implementado]*                                                                                        | Ordenar por puntuación o tiempo.                                                   |
+| RF-07       | Gestión de usuarios.                                     | OBJ-05       | Gestionar usuarios       | *[No implementado — se sugiere clase `Usuario`]*                                                           | Registro, login, roles.                                                            |
+| RF-08       | Panel administrador para retos.                          | OBJ-05       | Gestionar retos          | *[No implementado — se puede vincular a `SudokuGUI`]*                                                      | Crear, editar, eliminar retos.                                                     |
+| RF-09       | Notificaciones de logros o recordatorios.                | OBJ-03       | N/A                      | *[No implementado — se sugiere un sistema de alertas con GUI]*                                             | Activación de logros, alertas visibles.                                            |
+| RF-10       | Soporte responsive y multidispositivo.                   | OBJ-01       | N/A                      | `SudokuGUI`, uso de `JPanel`                                                                              | Verifica funcionalidad en pantallas diferentes.                                    |
+
+---
+
+### Requisitos No Funcionales
+
+| **ID RNF** | **Descripción**                                             | **Requisitos Impactados**     | **Clases Relacionadas**                       | **Casos de Prueba**                                                                 |
+|------------|-------------------------------------------------------------|-------------------------------|-----------------------------------------------|-------------------------------------------------------------------------------------|
+| RNF-01     | Tiempo de respuesta < 150 ms                                | RF-02                         | `Sudoku`, `SudokuGUI`                         | Pruebas de latencia con entradas rápidas.                                          |
+| RNF-02     | Disponibilidad ≥ 99,5 %                                     | RF-03, RF-06                  | *(Sugerido: arquitectura cloud / backend)*     | Simulación de interrupciones y recuperación.                                       |
+| RNF-03     | Comunicación segura (HTTPS/TLS)                             | RF-07                         | *(Aplicaría en arquitectura cliente-servidor)*| Prueba con certificados y conexiones seguras.                                      |
+| RNF-04     | Accesibilidad WCAG 2.1 AA                                   | RF-10                         | `SudokuGUI`                                   | Prueba con lectores de pantalla y navegación por teclado.                         |
+| RNF-05     | 5.000 usuarios concurrentes                                 | Todos                         | *(Sugerido: escalar backend y base de datos)* | Test de estrés simultáneo.                                                         |
+| RNF-06     | Guardado automático cada 30 seg.                            | RF-03                         | *(No implementado aún — clase persistencia)*  | Verificar guardado periódico del estado del tablero.                              |
+| RNF-07     | Encriptación en tránsito y reposo                           | RF-07                         | *(No implementado)*                           | Verificación del cifrado de credenciales.                                          |
+| RNF-08     | Compatibilidad navegadores y móviles                        | RF-10                         | `SudokuGUI`                                   | Ejecutar en diferentes navegadores/SO.                                             |
