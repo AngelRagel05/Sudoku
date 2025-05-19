@@ -82,3 +82,52 @@ flowchart LR
  AD --> C6
  AD --> C7
 ```
+
+### 5.1 Diagrama de Interacción (Secuencia: Validar jugada y guardar progreso)
+```mermaid
+sequenceDiagram
+ actor Jugador
+ participant UI
+ participant API
+ participant DB
+
+ Jugador->>UI: Ingresa número en celda
+ UI->>API: POST /validar-jugada {fila, columna, valor}
+ API->>DB: Consulta solución correcta
+ DB-->>API: Valor correcto
+ API-->>UI: Resultado validación (correcto/incorrecto)
+ UI-->>Jugador: Muestra feedback en celda
+
+ Jugador->>UI: Guarda progreso
+ UI->>API: POST /guardar-progreso {estado-tablero}
+ API->>DB: Guarda estado en base de datos
+ DB-->>API: Confirmación guardado
+ API-->>UI: Confirmación guardado
+ UI-->>Jugador: Mensaje "Progreso guardado"
+```
+
+### 5.2 Diagrama de Interacción (Secuencia: Validar jugada y guardar progreso)
+```mermaid
+sequenceDiagram
+ actor Jugador
+ participant UI
+ participant API
+ participant DB
+
+ Jugador->>UI: Ingresa número en celda
+ UI->>API: POST /validar-jugada {fila, columna, valor}
+ API->>DB: Consulta solución correcta
+ DB-->>API: Valor correcto
+ API-->>UI: Resultado validación (correcto/incorrecto)
+ UI-->>Jugador: Muestra feedback en celda
+
+ Jugador->>UI: Guarda progreso
+ UI->>API: POST /guardar-progreso {estado-tablero}
+ API->>DB: Guarda estado en base de datos
+ DB-->>API: Confirmación guardado
+ API-->>UI: Confirmación guardado
+ UI-->>Jugador: Mensaje "Progreso guardado"
+
+```
+
+### 
