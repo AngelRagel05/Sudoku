@@ -144,3 +144,19 @@ stateDiagram-v2
     EnCurso --> Cancelada : abandonarPartida()
     Pausado --> Cancelada : abandonarPartida()
 ```
+
+### 5.4 Diagrama de Actividad (Solicitar pista y continuar jugando)
+``` mermaid
+flowchart TD
+
+ Inicio((●))
+ SolicitarPista([Solicitar pista])
+ MostrarPista([Mostrar celda correcta])
+ ContinuarJugando([Continuar juego])
+ Fin((◉))
+
+ Inicio --> SolicitarPista
+ SolicitarPista --> MostrarPista
+ MostrarPista --> ContinuarJugando
+ ContinuarJugando --> Fin
+```
