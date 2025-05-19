@@ -164,66 +164,54 @@ flowchart TD
 ### 5.5 Diagrama de Clases UML
 ``` mermaid
 classDiagram
-    class Usuario {
-        -id: int
-        -nombre: String
-        -email: String
-        -password: String
-        -rol: Rol
-        +iniciarSesion(): boolean
-        +cerrarSesion(): void
+    class Ejecutar {
+        +main(String[] args): void
     }
 
-    class Jugador {
-        +verEstadisticas(): Estadistica
-        +solicitarPista(): Celda
-        +guardarProgreso(): void
-        +cargarProgreso(): Tablero
+    class JuegoSudoku {
+        -sudoku: Sudoku
+        -sc: Scanner
+        -PrintStream: out
+
+        +Iniciar(): void
+        -mostrarTableroPersonalizado(): void
     }
 
-    class Administrador {
-        +gestionarUsuarios(): void
-        +crearReto(): void
-        +modificarReto(): void
-        +eliminarReto(): void
+    class Sudoku {
+        +tablero: int[][]
+        +celdasFijas: boolean[][] 
+
+        +generarTablero(dificultad: String): void
+        +esMovimientoValido(fila: int, columna: int, valor: int): boolean
+        +colocarNumero(fila: int, columna: int, valor: int): void
+        +estaResuelto(): void
+        +mostrarTablero(): void
+        +resolverInterno(): boolean
     }
 
-    class Tablero {
-        -id: int
-        -dificultad: Dificultad
-        -estadoActual: Celda[][]
-        -estadoSolucion: Celda[][]
-        +validarJugada(fila: int, col: int, valor: int): boolean
-        +completarCelda(fila: int, col: int): void
+    class SudokuCell {
+        -numeroDefinitivo: integer
+        -fijaoriginal: boolean
+        -fijaUsuario: boolean
+
+        +getValor(): int
+        +setValor(int valor): void
+        +esEditable(): boolean
+        +marcarCorrecto(boolean correcto): void
     }
 
-    class Celda {
-        -valor: int
-        -esEditable: boolean
-        -esCorrecta: boolean
+    class SudokuGUI {
+        -controlador: JuegoSudoku
+        +mostrarTablero(): void
+        +actualizarCelda(fila: int, columna: int, valor: int): void
+        +mostrarMensaje(String mensaje): void
     }
 
-    class Estadistica {
-        -partidasJugadas: int
-        -partidasCompletadas: int
-        -tiempoPromedio: float
-        +calcularProgreso(): float
-    }
-
-    class Reto {
-        -id: int
-        -nombre: String
-        -tablero: Tablero
-        -fechaPublicacion: Date
-    }
-
-    Usuario <|-- Jugador
-    Usuario <|-- Administrador
-    Jugador --> Tablero
-    Jugador --> Estadistica
-    Administrador --> Reto
-    Reto --> Tablero
-    Tablero --> Celda
+    Ejecutar --> JuegoSudoku
+    JuegoSudoku --> Sudoku
+    JuegoSudoku --> SudokuGUI
+    Sudoku --> SudokuCell
+    SudokuGUI --> JuegoSudoku
 
 ```
 
