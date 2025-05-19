@@ -161,6 +161,72 @@ flowchart TD
  ContinuarJugando --> Fin
 ```
 
+### 5.5 Diagrama de Clases UML
+``` mermaid
+classDiagram
+    class Usuario {
+        -id: int
+        -nombre: String
+        -email: String
+        -password: String
+        -rol: Rol
+        +iniciarSesion(): boolean
+        +cerrarSesion(): void
+    }
+
+    class Jugador {
+        +verEstadisticas(): Estadistica
+        +solicitarPista(): Celda
+        +guardarProgreso(): void
+        +cargarProgreso(): Tablero
+    }
+
+    class Administrador {
+        +gestionarUsuarios(): void
+        +crearReto(): void
+        +modificarReto(): void
+        +eliminarReto(): void
+    }
+
+    class Tablero {
+        -id: int
+        -dificultad: Dificultad
+        -estadoActual: Celda[][]
+        -estadoSolucion: Celda[][]
+        +validarJugada(fila: int, col: int, valor: int): boolean
+        +completarCelda(fila: int, col: int): void
+    }
+
+    class Celda {
+        -valor: int
+        -esEditable: boolean
+        -esCorrecta: boolean
+    }
+
+    class Estadistica {
+        -partidasJugadas: int
+        -partidasCompletadas: int
+        -tiempoPromedio: float
+        +calcularProgreso(): float
+    }
+
+    class Reto {
+        -id: int
+        -nombre: String
+        -tablero: Tablero
+        -fechaPublicacion: Date
+    }
+
+    Usuario <|-- Jugador
+    Usuario <|-- Administrador
+    Jugador --> Tablero
+    Jugador --> Estadistica
+    Administrador --> Reto
+    Reto --> Tablero
+    Tablero --> Celda
+
+```
+
 ## 6. Matriz de Trazabilidad
 
 | **ID Requisito** | **Descripción del Requisito**                            | **ID Objetivo Relacionado** | **Casos de Uso**           | **Diagramas UML Relacionados**                        |
