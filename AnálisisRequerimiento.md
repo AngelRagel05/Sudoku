@@ -130,4 +130,17 @@ sequenceDiagram
 
 ```
 
-### 
+### 5.3 Diagrama de Estado (Ciclo de vida de una partida Sudoku)
+``` mermaid
+stateDiagram-v2
+    [*] --> Nuevo
+
+    Nuevo --> EnCurso : iniciarPartida()
+    EnCurso --> Pausado : pausarPartida()
+    Pausado --> EnCurso : reanudarPartida()
+    EnCurso --> Finalizada : completarTablero()
+    Finalizada --> [*]
+
+    EnCurso --> Cancelada : abandonarPartida()
+    Pausado --> Cancelada : abandonarPartida()
+```
