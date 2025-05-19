@@ -160,3 +160,29 @@ flowchart TD
  MostrarPista --> ContinuarJugando
  ContinuarJugando --> Fin
 ```
+
+## 6. Matriz de Trazabilidad
+
+| **ID Requisito** | **Descripción del Requisito**                            | **ID Objetivo Relacionado** | **Casos de Uso**           | **Diagramas UML Relacionados**                        |
+|------------------|----------------------------------------------------------|-----------------------------|----------------------------|------------------------------------------------------|
+| RF-01            | Generar tablero Sudoku válido con nivel de dificultad.   | OBJ-01                      | Generar tablero            | Diagrama de Casos de Uso (C1)                        |
+| RF-02            | Validar jugadas en tiempo real y mostrar feedback.       | OBJ-01                      | Validar jugada             | Diagrama de Casos de Uso (C2), Diagrama de Secuencia |
+| RF-03            | Guardar y cargar progreso de partidas.                   | OBJ-02                      | Guardar progreso           | Diagrama de Casos de Uso (C3), Diagrama de Secuencia |
+| RF-04            | Solicitar pistas limitadas por partida.                  | OBJ-03                      | Solicitar pista            | Diagrama de Casos de Uso (C4), Diagrama de Actividad |
+| RF-05            | Mostrar estadísticas personales.                         | OBJ-04                      | Ver estadísticas           | Diagrama de Casos de Uso (C5)                        |
+| RF-06            | Mostrar rankings globales actualizados diariamente.      | OBJ-04                      | Ver ranking                | Diagrama de Casos de Uso (C8)                        |
+| RF-07            | Gestión de usuarios: registro, roles, etc.                | OBJ-05                      | Gestionar usuarios         | Diagrama de Casos de Uso (C6)                        |
+| RF-08            | Panel administrador para gestión de retos.               | OBJ-05                      | Gestionar retos            | Diagrama de Casos de Uso (C7)                        |
+| RF-09            | Sistema de notificaciones para alertas.                  | OBJ-03                      | No aplica directamente     | -                                                    |
+| RF-10            | Soporte para múltiples dispositivos (responsive design). | OBJ-01                      | No aplica directamente     | -                                                    |
+
+| **ID Requisito No Funcional** | **Descripción**                                  | **Impacto en Requisitos Funcionales**                 |
+|-------------------------------|--------------------------------------------------|-------------------------------------------------------|
+| RNF-01                        | Tiempo de respuesta < 150 ms                      | RF-02 Validación rápida de jugadas                     |
+| RNF-02                        | Disponibilidad ≥ 99.5%                            | Todos, especialmente RF-03 y RF-06                     |
+| RNF-03                        | Comunicación segura HTTPS/TLS                      | RF-07 Gestión segura de usuarios                        |
+| RNF-04                        | Accesibilidad WCAG 2.1 AA                         | RF-10 Soporte en dispositivos accesibles               |
+| RNF-05                        | Soporte para 5,000 usuarios concurrentes         | Todos los que implican interacción simultánea         |
+| RNF-06                        | Guardado automático cada 30 segundos              | RF-03 Guardar progreso                                  |
+| RNF-07                        | Encriptación datos sensibles en tránsito y reposo | RF-07 Seguridad de datos de usuario                     |
+| RNF-08                        | Compatibilidad con navegadores modernos y móviles | RF-10 Usabilidad en diferentes dispositivos             |
