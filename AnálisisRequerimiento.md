@@ -2,47 +2,83 @@
 
 # Descripción General.
 
-Desarrollar una plataforma web donde los usuarios puedan jugar Sudoku de distintos niveles de dificultad, guardar su progreso, acceder a estadísticas personales y compartir retos con otros usuarios. La plataforma deberá contar con generación automática de tableros, validación en tiempo real, pistas y un sistema de clasificación basado en tiempos y aciertos.
+Desarrollar una plataforma web donde los usuarios puedan jugar Sudoku en diferentes niveles de dificultad, validar sus jugadas, guardar su progreso, solicitar pistas, ver estadísticas personales y acceder a rankings globales. Habrá un rol de administrador encargado de gestionar usuarios y crear nuevos retos.
 
 ---
 
 ## 2. Objetivos del Proyecto
 
-| **ID**  | **Objetivo SMART**                                                    | **Tipo**    | **Métrica**                         | **Fecha Límite** | **Responsable**          | **Estado**  |
-| ------- | -------------------------------------------------------------------- | ----------- | ---------------------------------- | ---------------- | ------------------------ | ----------- |
-| OBJ-01  | Implementar la generación automática de tableros Sudoku en 3 niveles (fácil, medio, difícil) en 2 meses. | Estratégico | % de tableros generados correctamente | 2025-07-31       | Equipo de Desarrollo     | No iniciado |
-| OBJ-02  | Incorporar validación en tiempo real de las jugadas para el 100 % de los tableros antes del lanzamiento. | Estratégico | % de validaciones implementadas    | 2025-08-15       | Equipo QA                | En progreso |
-| OBJ-03  | Permitir guardar y reanudar partidas para al menos el 80 % de los usuarios activos en 3 meses. | Táctico     | % de usuarios que usan guardado    | 2025-09-30       | Equipo Backend           | No iniciado |
-| OBJ-04  | Crear sistema de pistas con máximo 3 pistas por partida para mejorar la experiencia de usuario. | Operativo   | Número de pistas usadas             | 2025-09-15       | Equipo UX/UI             | No iniciado |
-| OBJ-05  | Implementar un ranking con tiempos y aciertos para motivar la competitividad. | Táctico     | Nº de partidas con ranking activado | 2025-10-01       | Equipo de Desarrollo     | No iniciado |
-| OBJ-06  | Garantizar que el tiempo de carga inicial sea menor a 1 segundo en dispositivos móviles. | Operativo   | Tiempo medio de carga               | 2025-07-15       | Equipo de Infraestructura | En progreso |
-
----
+| **ID** | **Objetivo SMART**                                                               | **Tipo**    | **Métrica**                     | **Fecha Límite** | **Responsable**     | **Estado**  |
+| ------ | -------------------------------------------------------------------------------- | ----------- | ------------------------------ | ---------------- | ------------------- | ----------- |
+| OBJ-01 | Implementar tablero Sudoku con validación instantánea en 2 meses.                 | Estratégico | % funcionalidades implementadas | 2025-07-01       | Equipo de Desarrollo | No iniciado |
+| OBJ-02 | Permitir guardar y cargar progreso en 100% de partidas antes de 3 meses.         | Operativo   | % partidas con guardado         | 2025-07-15       | Equipo de Desarrollo | No iniciado |
+| OBJ-03 | Integrar sistema de pistas con límite de uso y feedback claro para usuario.      | Táctico     | % usuarios que usan pistas      | 2025-07-30       | Equipo de Desarrollo | En progreso |
+| OBJ-04 | Desarrollar sistema de rankings con actualización diaria.                        | Estratégico | Frecuencia actualización        | 2025-08-15       | Equipo de Producto   | No iniciado |
+| OBJ-05 | Implementar panel de administración para gestión de usuarios y retos en 2 meses. | Operativo   | Funcionalidades panel admin     | 2025-07-30       | Equipo de Desarrollo | En progreso |
 
 ## 3. Requisitos Funcionales
 
-| **ID**  | **Descripción**                                                                                      | **Prioridad** | **Fuente**          | **Estado** |
-| ------- | -------------------------------------------------------------------------------------------------- | ------------- | ------------------- | ---------- |
-| RF-01   | Generar tableros Sudoku con solución única para 3 niveles de dificultad.                           | Alta          | Análisis de mercado | Propuesto  |
-| RF-02   | Validar las entradas del usuario en tiempo real, mostrando errores y aciertos.                     | Alta          | Feedback usuario    | Propuesto  |
-| RF-03   | Permitir guardar el progreso actual y reanudar la partida en cualquier momento.                   | Alta          | Requisitos internos | Propuesto  |
-| RF-04   | Ofrecer opción de pedir pista que revele una celda correcta hasta 3 veces por partida.             | Media         | Requisitos internos | Propuesto  |
-| RF-05   | Mostrar estadísticas personales de partidas jugadas, tiempo promedio y porcentaje de aciertos.    | Media         | Requisitos internos | Propuesto  |
-| RF-06   | Implementar sistema de ranking público con tiempos de resolución y número de pistas usadas.        | Media         | Requisitos internos | Propuesto  |
-| RF-07   | Permitir compartir retos personalizados con otros usuarios mediante enlace o código.              | Baja          | Requisitos opcionales | Propuesto  |
-| RF-08   | Proveer interfaz intuitiva compatible con dispositivos móviles y escritorio.                       | Alta          | Estándares UX       | Propuesto  |
-
----
+| **ID** | **Descripción**                                                                                 | **Prioridad** | **Fuente**          | **Estado** |
+| ------ | ----------------------------------------------------------------------------------------------- | ------------- | ------------------- | ---------- |
+| RF-01  | Generar tablero Sudoku válido con nivel de dificultad seleccionado.                             | Alta          | Análisis interno    | Propuesto  |
+| RF-02  | Validar jugadas en tiempo real y mostrar errores o aciertos.                                   | Alta          | Análisis interno    | Propuesto  |
+| RF-03  | Guardar y cargar el progreso de partidas para usuarios autenticados.                           | Alta          | Análisis interno    | Propuesto  |
+| RF-04  | Permitir solicitar pistas limitadas por partida.                                              | Media         | Análisis interno    | Propuesto  |
+| RF-05  | Mostrar estadísticas personales: partidas jugadas, completadas, tiempos promedio.             | Media         | Análisis interno    | Propuesto  |
+| RF-06  | Mostrar rankings globales actualizados diariamente.                                           | Media         | Análisis interno    | Propuesto  |
+| RF-07  | Gestión de usuarios: registro, inicio sesión, roles (jugador, administrador).                  | Alta          | Análisis interno    | Propuesto  |
+| RF-08  | Panel administrador para crear, modificar y eliminar retos Sudoku.                            | Alta          | Análisis interno    | Propuesto  |
+| RF-09  | Sistema de notificaciones para alertar al usuario sobre logros o recordatorios.               | Media         | Análisis interno    | Propuesto  |
+| RF-10  | Soporte para múltiples dispositivos (responsive design).                                      | Alta          | Análisis interno    | Propuesto  |
 
 ## 4. Requisitos No Funcionales
 
-| **ID**  | **Descripción**                                                          | **Categoría**  | **Métrica**                  | **Nivel Objetivo**    | **Comentarios**                         |
-| ------- | ------------------------------------------------------------------------ | -------------- | ---------------------------- | --------------------- | ------------------------------------- |
-| RNF-01  | Tiempo de respuesta al validar una celda menor a 100 ms.                 | Rendimiento    | Latencia validación          | < 100 ms              | Evaluación en dispositivos móviles.  |
-| RNF-02  | Soportar hasta 10 000 usuarios concurrentes jugando sin degradación.    | Escalabilidad  | Usuarios concurrentes        | ≥ 10 000              | Infraestructura en nube escalable.    |
-| RNF-03  | Cargar la interfaz completa en menos de 1 segundo en conexiones 4G.      | Rendimiento    | Tiempo de carga              | ≤ 1 s                 | Optimización front-end y uso de CDN.  |
-| RNF-04  | Cumplir con estándares de accesibilidad WCAG 2.1 nivel AA.               | Usabilidad     | Nivel de accesibilidad       | AA                    | Validación con herramientas externas.|
-| RNF-05  | Proteger los datos personales y de progreso con cifrado AES-256.         | Seguridad      | Nivel de cifrado             | AES-256               | Protección en tránsito y almacenamiento. |
-| RNF-06  | Garantizar disponibilidad del sistema ≥ 99,9 % mensual.                  | Disponibilidad | % uptime                    | ≥ 99,9 %              | Monitorización y alertas automáticas. |
-| RNF-07  | Registro de auditoría de acciones críticas (inicio sesión, cambios en perfil). | Seguridad  | Integridad de logs           | 100 % integridad      | Uso de sistemas inmutables de logs.  |
-| RNF-08  | Compatibilidad con navegadores modernos (Chrome, Firefox, Edge, Safari). | Usabilidad     | % usuarios con navegador soportado | ≥ 95 %             | Pruebas periódicas de compatibilidad.|
+| **ID** | **Descripción**                                          | **Categoría**  | **Métrica**                      | **Nivel Objetivo**   | **Comentarios**                         |
+| ------ | -------------------------------------------------------- | -------------- | -------------------------------- | -------------------- | -------------------------------------- |
+| RNF-01 | Tiempo de respuesta al validar jugada < 150 ms          | Rendimiento    | Latencia                         | < 150 ms             | Medición con pruebas de carga.          |
+| RNF-02 | Disponibilidad del sistema ≥ 99,5 % mensual              | Disponibilidad | % Uptime                        | ≥ 99,5 %             | Monitorización continua y alertas.      |
+| RNF-03 | Cumplir HTTPS/TLS para todas las comunicaciones          | Seguridad      | Cifrado                         | TLS 1.2+ obligatorio | Auditorías de seguridad periódicas.     |
+| RNF-04 | Interfaz accesible y compatible con WCAG 2.1 AA          | Usabilidad     | Puntuación auditoría accesible  | Nivel AA             | Auditoría externa antes del lanzamiento.|
+| RNF-05 | Soportar al menos 5 000 usuarios concurrentes            | Escalabilidad  | Usuarios concurrentes           | ≥ 5 000              | Autoescalado en la nube.                 |
+| RNF-06 | Guardado automático cada 30 segundos                      | Rendimiento    | Frecuencia de guardado          | ≤ 30 seg             | Prevención de pérdida de datos.          |
+| RNF-07 | Encriptación de datos sensibles en tránsito y reposo     | Seguridad      | Cifrado                        | AES-256 o equivalente | Protección avanzada de datos.            |
+| RNF-08 | Compatibilidad con navegadores modernos y móviles        | Compatibilidad | Soporte                        | Chrome, Firefox, Safari, Edge, iOS, Android | Testing multiplataforma.        |
+
+---
+
+## 5. Diagramas UML
+
+### 5.1 Diagrama de Casos de Uso
+
+```mermaid
+flowchart LR
+
+ %% Actores
+ JU(("👤 Jugador"))
+ AD(("🛠️ Administrador"))
+
+ %% Sistema
+ subgraph "Sistema Sudoku"
+
+  C1(("Generar tablero"))
+  C2(("Validar jugada"))
+  C3(("Guardar progreso"))
+  C4(("Solicitar pista"))
+  C5(("Ver estadísticas"))
+  C6(("Gestionar usuarios"))
+  C7(("Gestionar retos"))
+  C8(("Ver ranking"))
+
+ end
+
+ JU --> C1
+ JU --> C2
+ JU --> C3
+ JU --> C4
+ JU --> C5
+ JU --> C7
+ JU --> C8
+
+ AD --> C6
+ AD --> C7
+```
