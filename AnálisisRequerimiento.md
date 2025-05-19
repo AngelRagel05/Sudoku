@@ -194,17 +194,18 @@ classDiagram
         -fijaoriginal: boolean
         -fijaUsuario: boolean
 
-        +getValor(): int
-        +setValor(int valor): void
-        +esEditable(): boolean
-        +marcarCorrecto(boolean correcto): void
+        +isFijaUsuario(): boolean
+        +setceldaFija(fijaOriginal boolean, fijaUsuario boolean): void
+        +setNumeroDefinitivo(num Integer): void
+        +getNumeroDefinitivo(boolean correcto): Integer
     }
 
     class SudokuGUI {
-        -controlador: JuegoSudoku
-        +mostrarTablero(): void
-        +actualizarCelda(fila: int, columna: int, valor: int): void
-        +mostrarMensaje(String mensaje): void
+        -sudoku: Sudoku
+        -celdas: SudokuCell[][]
+        -panelTablero: JPanel
+
+        +actualizarTablero(): void
     }
 
     Ejecutar --> JuegoSudoku
