@@ -1,10 +1,9 @@
 # Plataforma Web de Sudoku Interactivo
 
-# Descripción General.
+## 1. Descripción General.
 
 Desarrollar una plataforma web donde los usuarios puedan jugar Sudoku en diferentes niveles de dificultad, validar sus jugadas, guardar su progreso, solicitar pistas, ver estadísticas personales y acceder a rankings globales. Habrá un rol de administrador encargado de gestionar usuarios y crear nuevos retos.
 
----
 
 ## 2. Objetivos del Proyecto
 
