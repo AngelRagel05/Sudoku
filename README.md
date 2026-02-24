@@ -1,4 +1,3 @@
-//test to link repo and issues
 # Plataforma Web de Sudoku Interactivo
 
 ## 1. Descripción General.
